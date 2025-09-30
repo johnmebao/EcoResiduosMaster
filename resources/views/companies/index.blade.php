@@ -1,6 +1,3 @@
-
-
-
 @extends('adminlte::page')
 
 @section('title', 'Dashboard')
@@ -11,10 +8,14 @@
 
 @section('content')
     <div class="container-fluid">
+        <br>
+        <x-adminlte-card theme="lime" theme-mode="outline"> 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h1>Empresas recolectoras</h1>
             <a href="{{ route('companies.create') }}" class="btn btn-primary">Nueva empresa</a>
-            </div>
+        </div> </x-adminlte-card>
+        <br>
+        <x-adminlte-card theme="lime" theme-mode="outline"> 
                 <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
@@ -45,6 +46,7 @@
                         {{-- @endforeach --}}
                     </tbody>
                 </table>
+                </x-adminlte-card>
             </div>
         </div>
     </div>

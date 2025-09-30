@@ -6,10 +6,12 @@
     
 @stop
 @section('content')
-<x-adminlte-card theme="lime" theme-mode="outline">
+
 <div class="container-fluid">
     <h1>Nueva empresa recolectora</h1>
-    <form action="{{ route('companies.store') }}" method="POST">
+    <div class="card-body">
+        <x-adminlte-card theme="lime" theme-mode="outline">
+       <form action="{{ route('companies.store') }}" method="POST">
         @csrf
         <div class="form-group">
             <label for="nombre">Nombre</label>
@@ -25,9 +27,12 @@
         </div>
         <button type="submit" class="btn btn-success">Guardar</button>
         <a href="{{ route('companies.index') }}" class="btn btn-secondary">Cancelar</a>
-    </form>
+    </form> 
+    </x-adminlte-card>
+    </div>
+    
 </div>
-</x-adminlte-card>
+
 @stop
 
 @section('css')

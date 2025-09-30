@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'AdminLTE 3',
+    'title' => 'EcoResiduos',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -63,7 +63,7 @@ return [
     |
     */
 
-    'logo' => '<b>Admin</b>LTE',
+    'logo' => '<b>Eco</b>Residuos',
     'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -110,7 +110,7 @@ return [
     */
 
     'preloader' => [
-        'enabled' => true,
+        'enabled' => false,
         'mode' => 'fullscreen',
         'img' => [
             'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
@@ -310,6 +310,17 @@ return [
             'icon' => 'fas fa-industry',
         ],
         [
+            'text' => 'Usuarios',
+            'url' => '/personas',
+            'icon' => 'fas fa-user',
+        ],
+        [
+            'text'=> 'Roles',
+            'url' => 'admin/roles',
+            'icon' => 'fas fa-fw fa-users-cog',
+            'can' => 'admin.roles.index',
+       ],
+        [
             'text' => 'Recolecciones',
             'url' => '/collections',
             'icon' => 'fas fa-recycle',
@@ -363,7 +374,7 @@ return [
 
     'plugins' => [
         'Datatables' => [
-            'active' => false,
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',

@@ -1,19 +1,19 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Inicio')
 
 @section('content_header')
-    
+    <h1>Registro Personal</h1>
 @stop
-@section('content')
 
+@section('content')
     <x-adminlte-card theme="lime" theme-mode="outline">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Nueva Persona</h3>
 
         </div>
         <div class="card-body">
-            <form action="{{ url('personal/create') }}" method="POST">
+            <form action="{{ url('personas/create') }}" method="POST">
                 @csrf
                 
                 <div class="mb-3">
@@ -50,11 +50,19 @@
                     @error('email')
                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                     @enderror
+                </div>
+                <div class="mb-3">  
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input type="number" class="form-control" id="telefono" name="telefono" required>
+                    @error('telefono')
+                        <div class="alert alert-danger mt-2">{{ $message }}</div>
+                    @enderror
+                </div>
                 <hr>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <a href="{{ url('admin/personal') }}" class="btn btn-primary float-right">Cancelar</a>
+                            <a href="{{ url('personal') }}" class="btn btn-primary float-right">Cancelar</a>
                             <button type="submit" class="btn btn-success float-right mr-2">Guardar</button>
                         </div>
                     </div>
@@ -62,14 +70,12 @@
             </form>
         </div>
     </x-adminlte-card>
-
 @stop
 
 @section('css')
-    {{-- Add here extra stylesheets --}}
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
 @stop
 
 @section('js')
-    <script> console.log("Hi, I'm using the Laravel-AdminLTE package!"); </script>
+    <script>
+    </script>
 @stop

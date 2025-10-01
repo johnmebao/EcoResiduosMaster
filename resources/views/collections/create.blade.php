@@ -1,39 +1,54 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Nueva Recolección')
 
 @section('content_header')
 @stop
 @section('content')
 <x-adminlte-card theme="lime" theme-mode="outline">
     <div class="container-fluid">
-
         <h1>Nueva recolección</h1>
         <form action="{{ route('collections.store') }}" method="POST">
             @csrf
             <div class="form-group">
                 <label for="user_id">Usuario</label>
-                <input type="number" name="user_id" class="form-control" required>
+                <select name="user_id" class="form-control select2" required>
+                    <option value="">Seleccione un usuario</option>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group">
                 <label for="company_id">Empresa</label>
-                <input type="number" name="company_id" class="form-control" required>
+                <select name="company_id" class="form-control select2" required>
+                    <option value="">Seleccione una empresa</option>
+                    @foreach($companies as $company)
+                        <option value="{{ $company->id }}">{{ $company->nombre }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group">
                 <label for="tipo_residuo">Tipo residuo</label>
-                <input type="text" name="tipo_residuo" class="form-control" required>
+                <select name="tipo_residuo" class="form-control" required>
+                    <option value="">Seleccione un tipo</option>
+                    @foreach(App\Models\Collection::getTiposResiduos() as $key => $tipo)
+                        <option value="{{ $key }}">{{ $tipo }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group">
                 <label for="fecha_programada">Fecha programada</label>
-                <input type="date" name="fecha_programada" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="peso_kg">Peso (kg)</label>
-                <input type="number" step="0.01" name="peso_kg" class="form-control">
+                <input type="date" name="fecha_programada" class="form-control" required>
             </div>
             <div class="form-group">
                 <label for="estado">Estado</label>
-                <input type="text" name="estado" class="form-control" required>
+                <select name="estado" class="form-control" required>
+                    <option value="">Seleccione un estado</option>
+                    @foreach(App\Models\Collection::getEstados() as $key => $estado)
+                        <option value="{{ $key }}">{{ $estado }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group">
                 <label for="notas">Notas</label>

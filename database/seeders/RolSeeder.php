@@ -21,12 +21,12 @@ class RolSeeder extends Seeder
         //CREAR ROLES POR DEFECTO
         // COMANDO PARA EJECUITAR LOS SEEDERS: php artisan migrate:refresh --seed
         $administrador = Role::create(['name' => 'Administrador']);
-        $responsable = Role::create(['name' => 'Responsable']);
+        $responsable = Role::create(['name' => 'Recolector']);
         $usuario = Role::create(['name' => 'Usuario']);
 
         // Crear usuarios y roles por defecto
         User::create(['name' => 'John Medina Bilbao', 'email' => 'medinabao@gmail.com', 'password' => bcrypt('medina25')])->assignRole('Administrador');  
-        Persona::create(['usuario_id' => 1, 'nombres' => 'John Medina Bilbao','documento' => '12345678', 'telefono' => '987654321', 'direccion' => 'Av. Siempre Viva 742', 'correo' => 'john@example.com']);
+        Persona::create(['usuario_id' => 1, 'nombres' => 'John Medina Bilbao','documento' => '12345678', 'telefono' => '987654321', 'direccion' => 'Av. Siempre Viva 742', 'email' => 'john@example.com']);
         //Sede::create(['nombre' => 'SEDE PRINCIPAL', 'telefono' => '987654321',]);
 
         // Assign permissions to roles

@@ -1,5 +1,9 @@
-@extends('layouts.adminlte')
-@section('title', 'Detalle recolección')
+@extends('adminlte::page')
+
+@section('title', 'Nueva Recolección')
+
+@section('content_header')
+@stop
 @section('content')
 <div class="container-fluid">
     <h1>Detalle recolección</h1>
@@ -17,4 +21,16 @@
         </div>
     </div>
 </div>
-@endsection
+
+@stop
+@section('css')
+{{-- Add here extra stylesheets --}}
+{{--
+<link rel="stylesheet" href="/css/admin_custom.css"> --}}
+@stop
+
+@section('js')
+<script>
+    console.log("Hi, I'm using the Laravel-AdminLTE package!");
+</script>
+@stop

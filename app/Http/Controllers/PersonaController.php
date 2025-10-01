@@ -35,6 +35,8 @@ class PersonaController extends Controller
             'nombres' => 'required|string',
             'documento' => 'required|numeric|unique:personals',
             'email' => 'required|email|unique:users,email',
+            'telefono' => 'nullable|string',
+            'direccion' => 'nullable|string',
             'rol_id' => 'required',
         ]);
 
@@ -54,10 +56,13 @@ class PersonaController extends Controller
         $personal->usuario_id = $persona->id;
         $personal->nombres = $request->nombres;
         $personal->documento = $request->documento;
-        $personal->correo = $request->email;
+        $personal->email = $request->email;
+        $personal->telefono = $request->telefono;
+        $personal->direccion = $request->direccion;
+        
         $personal->save();
 
-        return redirect()->route('admin.personal.index')->with('success', 'Personal creado correctamente.');
+        return redirect()->route('personas.index')->with('success', 'Usuario creado correctamente.');
     }
 
    
@@ -108,7 +113,7 @@ class PersonaController extends Controller
             $usuario->syncRoles([$rol->name]);
         }
 
-        return redirect()->route('admin.personal.index')->with('success', 'Personal actualizado correctamente.');
+        return redirect()->route('personas.index')->with('success', 'Personal actualizado correctamente.');
     }
 
     public function destroy(Persona $id)
@@ -124,7 +129,7 @@ class PersonaController extends Controller
         // Eliminar el registro de Persona
         $personal->delete();
 
-        return redirect()->route('admin.personal.index')->with('success', 'Personal eliminado correctamente.');
+        return redirect()->route('personas.index')->with('success', 'Personal eliminado correctamente.');
     }
 
 }

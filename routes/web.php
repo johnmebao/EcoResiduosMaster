@@ -28,6 +28,9 @@ Route::get('/collections/create', [CollectionController::class, 'create'])->name
 Route::post('/collections', [CollectionController::class, 'store'])->name('collections.store');
 Route::get('/collections/{id}', [CollectionController::class, 'show'])->name('collections.show');
 Route::post('/collections/{id}/mark-completed', [CollectionController::class, 'markCompleted'])->name('collections.markCompleted');
+Route::get('collections/{id}/register-waste', [CollectionController::class, 'registerWaste'])->name('collections.register-waste');
+Route::put('collections/{id}/update-waste', [CollectionController::class, 'updateWaste'])->name('collections.update-waste');
+Route::resource('collections', CollectionController::class);
 
 // Users
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -59,13 +62,17 @@ Route::get('/admin/roles/permisos/{id}', [RoleController::class, 'permiso'])->na
 Route::put('/admin/roles/permisos/{id}', [RoleController::class, 'actualizar_permiso'])->name('admin.roles.actualizar_permiso'); //->middleware('auth', 'can:admin.roles.actualizar_permiso');
 
 
+//
 
 
 // Companies
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
 Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
 Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');
+Route::get('/companies/{id}/edit', [CompanyController::class, 'edit'])->name('companies.edit');
+Route::put('/companies/{id}', [CompanyController::class, 'update'])->name('companies.update');
 Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
+Route::get('/companies/{id}/delete', [CompanyController::class, 'destroy'])->name('companies.destroy');
 
 // Reports
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

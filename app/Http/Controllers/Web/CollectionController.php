@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Collection;
 use App\Models\User;
 use App\Models\Company;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 
 class CollectionController extends Controller
@@ -13,7 +14,7 @@ class CollectionController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:recolector')->only(['registerWaste', 'updateWaste']);
+        //$this->middleware('role:Recolector')->only(['registerWaste', 'updateWaste']);
     }
 
     public function index()
@@ -36,10 +37,15 @@ class CollectionController extends Controller
             'company_id' => 'required|exists:companies,id',
             'tipo_residuo' => 'required|string',
             'fecha_programada' => 'required|date',
-            'peso_kg' => 'required|numeric|min:0',
+            'peso_kg' => 'nullable|numeric|min:0',
             'estado' => 'required|string',
             'notas' => 'nullable|string'
         ]);
+
+        // Si no se envía peso_kg, lo dejamos en null
+        if (!isset($validated['peso_kg'])) {
+            $validated['peso_kg'] = null;
+        }
 
         Collection::create($validated);
 
@@ -87,20 +93,34 @@ class CollectionController extends Controller
             ->with('success', 'Recolección eliminada exitosamente');
     }
 
-    public function registerWaste(Collection $collection)
+    public function registerWaste($id)
     {
-        // Verificar que la recolección esté pendiente
-        if ($collection->estado !== 'pendiente') {
-            return redirect()
-                ->route('collections.index')
-                ->with('error', 'Solo se pueden registrar residuos en recolecciones pendientes');
-        }
-
+        $collection = Collection::all()->find($id);
         // Obtener los tipos de residuos y los detalles existentes
         $tiposResiduos = Collection::getTiposResiduos();
         $details = $collection->details;
 
+
+        // Verificar que el usuario sea un recolector
+        if (!auth()->user()->hasRole('Recolector')) {
+            return redirect()
+                ->route('collections.index')
+                ->with('error', 'No tienes permiso para registrar residuos.');
+        }
+
+        // Verificar que la recolección esté pendiente
+        if ($collection->estado !== 'pendiente') {
+            return redirect()
+                ->route('collections.index')
+                ->with('error', 'Solo se pueden registrar residuos en recolecciones pendientes.');
+        }
+
+        //return view('collections.register-waste', compact('collection'));
+
+
         return view('collections.register-waste', compact('collection', 'tiposResiduos', 'details'));
+
+       // echo "Funcionalidad en desarrollo";
     }
 
     public function updateWaste(Request $request, Collection $collection)

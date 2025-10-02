@@ -10,11 +10,6 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Recolecciones</h1>
         <div>
-            @if(auth()->user()->hasRole('recolector'))
-                <a href="{{ route('collections.register-waste') }}" class="btn btn-success mr-2">
-                    <i class="fas fa-weight"></i> Registrar Residuos
-                </a>
-            @endif
             <a href="{{ route('collections.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Nueva recolección
             </a>
@@ -57,6 +52,11 @@
                             <a href="{{ route('collections.edit', $collection) }}" class="btn btn-warning btn-sm">
                                 <i class="fas fa-edit"></i>
                             </a>
+                                @if(auth()->user()->hasRole(App\Models\User::ROLE_RECOLECTOR) && $collection->estado === 'pendiente')
+                                <a href="{{ route('collections.register-waste', $collection) }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-weight"></i> Registrar Residuos
+                                </a>
+                                @endif
                             @if(auth()->user()->can('delete collections'))
                             <form action="{{ route('collections.destroy', $collection) }}" method="POST" style="display:inline-block">
                                 @csrf

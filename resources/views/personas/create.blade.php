@@ -52,6 +52,13 @@
                     @enderror
                 </div>
                 <div class="mb-3">  
+                    <label for="direccion" class="form-label">Dirección</label>
+                    <input type="text" class="form-control" id="direccion" name="direccion" required>
+                    @error('direccion')
+                        <div class="alert alert-danger mt-2">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">  
                     <label for="telefono" class="form-label">Teléfono</label>
                     <input type="number" class="form-control" id="telefono" name="telefono" required>
                     @error('telefono')

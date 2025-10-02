@@ -19,7 +19,7 @@
                         <div class="form-group">
                             <label>Información de la Recolección</label>
                             <p><strong>Usuario:</strong> {{ $collection->user->name }}</p>
-                            <p><strong>Empresa:</strong> {{ $collection->company->name }}</p>
+                            <p><strong>Empresa:</strong> {{ $collection->company->nombre }}</p>
                             <p><strong>Fecha Programada:</strong> {{ $collection->fecha_programada }}</p>
                         </div>
                     </div>
@@ -96,6 +96,60 @@
         margin-bottom: 10px;
     }
 </style>
+@stop
+
+@section('js')
+<script>
+$(document).ready(function() {
+    // Función para agregar nuevo item de residuo
+    $('#add-waste').click(function() {
+        var template = $('#waste-items .waste-item').first().clone();
+        template.find('input').val('');
+        template.find('select').val('');
+        $('#waste-items').append(template);
+    });
+
+    // Función para eliminar item de residuo
+    $(document).on('click', '.remove-waste', function() {
+        if ($('#waste-items .waste-item').length > 1) {
+            $(this).closest('.waste-item').remove();
+        } else {
+            alert('Debe haber al menos un tipo de residuo');
+        }
+    });
+
+    // Validación del formulario
+    $('#waste-form').submit(function(e) {
+        var isValid = true;
+        var tipos = [];
+
+        $('.waste-item').each(function() {
+            var tipo = $(this).find('select[name="tipos[]"]').val();
+            var peso = $(this).find('input[name="pesos[]"]').val();
+
+            if (!tipo || !peso) {
+                isValid = false;
+                return false;
+            }
+
+            if (tipos.includes(tipo)) {
+                alert('No puede registrar el mismo tipo de residuo más de una vez');
+                isValid = false;
+                return false;
+            }
+
+            tipos.push(tipo);
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            return false;
+        }
+
+        return true;
+    });
+});
+</script>
 @stop
 
 @section('js')

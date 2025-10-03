@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Persona;
-use App\Models\Sede;
+use App\Models\Company;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
@@ -27,7 +27,9 @@ class RolSeeder extends Seeder
         // Crear usuarios y roles por defecto
         User::create(['name' => 'John Medina Bilbao', 'email' => 'medinabao@gmail.com', 'password' => bcrypt('medina25')])->assignRole('Administrador');  
         Persona::create(['usuario_id' => 1, 'nombres' => 'John Medina Bilbao','documento' => '12345678', 'telefono' => '987654321', 'direccion' => 'Av. Siempre Viva 742', 'email' => 'john@example.com']);
-        //Sede::create(['nombre' => 'SEDE PRINCIPAL', 'telefono' => '987654321',]);
+        Persona::create(['usuario_id' => 1, 'nombres' => 'John Medina test','documento' => '70786535', 'telefono' => '3046074654', 'direccion' => 'Av. Siempre Viva 743', 'email' => 'test@example.com']);
+
+        Company::create(['nombre' => 'Rio Aseo Total', 'tipo_residuos' => 'Plasticos', 'contacto' => '987654321']);
 
         // Assign permissions to roles
         Permission::create(['name' => 'admin.configuracion.index'])->assignRole($administrador);

@@ -10,7 +10,7 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('collections.update-waste', $collection) }}" method="POST" id="waste-form">
+            <form action="{{ route('collections.update-waste', $collection->id) }}" method="POST" id="waste-form">
                 @csrf
                 @method('PUT')
                 
@@ -21,6 +21,12 @@
                             <p><strong>Usuario:</strong> {{ $collection->user->name }}</p>
                             <p><strong>Empresa:</strong> {{ $collection->company->nombre }}</p>
                             <p><strong>Fecha Programada:</strong> {{ $collection->fecha_programada }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Peso Total</label>
+                            <p><strong>Peso Total:</strong> {{ $collection->peso_kg }} kg</p>
                         </div>
                     </div>
                 </div>
@@ -152,7 +158,7 @@ $(document).ready(function() {
 </script>
 @stop
 
-@section('js')
+{{-- @section('js')
 <script>
 $(function() {
     // Agregar nuevo ítem de residuo
@@ -201,4 +207,4 @@ $(function() {
     });
 });
 </script>
-@stop
+@stop --}}

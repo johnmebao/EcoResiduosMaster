@@ -9,6 +9,8 @@ class CollectionDetail extends Model
 {
     use HasFactory;
 
+    protected $table = 'collection_details';
+
     protected $fillable = [
         'collection_id',
         'tipo_residuo',

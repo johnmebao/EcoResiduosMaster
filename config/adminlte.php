@@ -326,6 +326,11 @@ return [
             'icon' => 'fas fa-recycle',
         ],
         [
+            'text' => 'Puntos de Reciclaje',
+            'url' => '/recycling-points',
+            'icon' => 'fas fa-trash',
+        ],
+        [
             'text' => 'Reportes',
             'url' => '/reports',
             'icon' => 'fas fa-file-alt',

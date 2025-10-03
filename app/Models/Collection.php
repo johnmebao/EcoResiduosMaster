@@ -31,6 +31,12 @@ class Collection extends Model
         return $this->belongsTo(Company::class);
     }
 
+    // Relación con los detalles de la recolección
+    public function details()
+    {
+        return $this->hasMany(CollectionDetail::class);
+    }
+
     // Lista de tipos de residuos disponibles
     public static function getTiposResiduos()
     {

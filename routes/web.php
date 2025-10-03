@@ -10,6 +10,7 @@ use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\SettingController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PointController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,11 +27,15 @@ Route::get('/admin/dashboard', function() {return view('dashboard');})->name('ad
 Route::get('/collections', [CollectionController::class, 'index'])->name('collections.index');
 Route::get('/collections/create', [CollectionController::class, 'create'])->name('collections.create');
 Route::post('/collections', [CollectionController::class, 'store'])->name('collections.store');
-Route::get('/collections/{id}', [CollectionController::class, 'show'])->name('collections.show');
+Route::get('/collections/{id}/show', [CollectionController::class, 'show'])->name('collections.show');
+Route::get('/collections/{id}/edit', [CollectionController::class, 'edit'])->name('collections.edit');
 Route::post('/collections/{id}/mark-completed', [CollectionController::class, 'markCompleted'])->name('collections.markCompleted');
 Route::get('collections/{id}/register-waste', [CollectionController::class, 'registerWaste'])->name('collections.register-waste');
 Route::put('collections/{id}/update-waste', [CollectionController::class, 'updateWaste'])->name('collections.update-waste');
-Route::resource('collections', CollectionController::class);
+
+// Rutas para la gestión de puntos de reciclaje
+Route::get('/recycling-points', [PointController::class, 'index'])->name('recycling-points.index');
+
 
 // Users
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -60,9 +65,6 @@ Route::put('/admin/roles/{id}', [RoleController::class, 'update'])->name('admin.
 Route::delete('/admin/roles/delete/{id}', [RoleController::class, 'destroy'])->name('admin.roles.destroy'); //->middleware('auth', 'can:admin.roles.destroy');
 Route::get('/admin/roles/permisos/{id}', [RoleController::class, 'permiso'])->name('admin.roles.permiso'); //->middleware('auth', 'can:admin.roles.permiso');
 Route::put('/admin/roles/permisos/{id}', [RoleController::class, 'actualizar_permiso'])->name('admin.roles.actualizar_permiso'); //->middleware('auth', 'can:admin.roles.actualizar_permiso');
-
-
-//
 
 
 // Companies

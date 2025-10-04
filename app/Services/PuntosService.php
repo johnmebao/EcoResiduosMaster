@@ -1,62 +1,106 @@
+
 <?php
 
 namespace App\Services;
 
-use App\Models\CollectionDetail;
 use App\Models\Point;
-use App\Models\User;
+use App\Contracts\PuntosCalculatorInterface;
+use App\Services\PuntosCalculators\SimplePuntosCalculator;
+use App\Services\PuntosCalculators\ConfigurablePuntosCalculator;
 use Illuminate\Support\Facades\Log;
 
 class PuntosService
 {
-    /**
-     * Calcular puntos basados en el peso y tipo de residuo
-     * 
-     * @param CollectionDetail $pesoRegistro
-     * @return float
-     */
-    public function calcularPuntos(CollectionDetail $pesoRegistro): float
+    protected $calculator;
+
+    public function __construct()
     {
-        // Solo calcular puntos si cumple requisitos de separación
-        if (!$pesoRegistro->requisitos_separacion) {
+        $this->setCalculator();
+    }
+
+    /**
+     * Establecer la estrategia de cálculo según configuración
+     */
+    protected function setCalculator(): void
+    {
+        $estrategia = config('puntos.estrategia', 'simple');
+
+        $this->calculator = match($estrategia) {
+            'configurable' => new ConfigurablePuntosCalculator(),
+            default => new SimplePuntosCalculator(),
+        };
+    }
+
+    /**
+     * Cambiar la estrategia de cálculo dinámicamente
+     */
+    public function cambiarEstrategia(string $estrategia): void
+    {
+        $this->calculator = match($estrategia) {
+            'configurable' => new ConfigurablePuntosCalculator(),
+            'simple' => new SimplePuntosCalculator(),
+            default => new SimplePuntosCalculator(),
+        };
+    }
+
+    /**
+     * Establecer un calculador personalizado
+     */
+    public function setCalculadorPersonalizado(PuntosCalculatorInterface $calculator): void
+    {
+        $this->calculator = $calculator;
+    }
+
+    /**
+     * Calcular puntos basados en el peso
+     */
+    public function calcularPuntos(float $pesoKg): float
+    {
+        if ($pesoKg <= 0) {
             return 0;
         }
 
-        // Solo inorgánicos reciclables generan puntos
-        if ($pesoRegistro->tipo_residuo !== 'INORGANICO') {
-            return 0;
-        }
-
-        // Fórmula básica: 1 kg = 1 punto
-        // Preparado para Strategy Pattern en Fase 3
-        $puntos = $pesoRegistro->peso_kg * 1;
-
-        return round($puntos, 2);
+        $puntos = $this->calculator->calcular($pesoKg);
+        
+        // Aplicar mínimo por recolección si está configurado
+        $minimo = config('puntos.minimo_por_recoleccion', 1);
+        
+        return max($puntos, $minimo);
     }
 
     /**
      * Asignar puntos a un usuario
-     * 
-     * @param User $user
-     * @param float $puntos
-     * @return Point
      */
-    public function asignarPuntos(User $user, float $puntos): Point
+    public function asignarPuntos(int $userId, float $pesoKg): Point
     {
         try {
-            $pointRecord = Point::addPoints($user->id, $puntos);
-            
+            $puntos = $this->calcularPuntos($pesoKg);
+
+            // Obtener o crear registro de puntos
+            $point = Point::firstOrCreate(
+                ['user_id' => $userId],
+                ['total_points' => 0, 'available_points' => 0]
+            );
+
+            // Incrementar puntos
+            $point->total_points += $puntos;
+            $point->available_points += $puntos;
+            $point->save();
+
             Log::info("Puntos asignados", [
-                'user_id' => $user->id,
+                'user_id' => $userId,
+                'peso_kg' => $pesoKg,
                 'puntos_agregados' => $puntos,
-                'puntos_totales' => $pointRecord->puntos
+                'puntos_totales' => $point->total_points,
+                'puntos_disponibles' => $point->available_points,
             ]);
 
-            return $pointRecord;
+            return $point;
+
         } catch (\Exception $e) {
             Log::error("Error al asignar puntos", [
-                'user_id' => $user->id,
-                'puntos' => $puntos,
+                'user_id' => $userId,
+                'peso_kg' => $pesoKg,
                 'error' => $e->getMessage()
             ]);
             throw $e;
@@ -64,46 +108,44 @@ class PuntosService
     }
 
     /**
-     * Procesar puntos para un registro de peso
-     * 
-     * @param CollectionDetail $pesoRegistro
-     * @return array
+     * Descontar puntos de un usuario (para canjes)
      */
-    public function procesarPuntos(CollectionDetail $pesoRegistro): array
+    public function descontarPuntos(int $userId, int $puntos): bool
     {
-        $puntos = $this->calcularPuntos($pesoRegistro);
-        
-        if ($puntos <= 0) {
-            return [
-                'puntos_calculados' => 0,
-                'puntos_asignados' => false,
-                'mensaje' => 'No se asignaron puntos: requisitos no cumplidos o tipo de residuo no válido.'
-            ];
+        try {
+            $point = Point::where('user_id', $userId)->first();
+
+            if (!$point || $point->available_points < $puntos) {
+                return false;
+            }
+
+            $point->available_points -= $puntos;
+            $point->save();
+
+            Log::info("Puntos descontados", [
+                'user_id' => $userId,
+                'puntos_descontados' => $puntos,
+                'puntos_disponibles' => $point->available_points,
+            ]);
+
+            return true;
+
+        } catch (\Exception $e) {
+            Log::error("Error al descontar puntos", [
+                'user_id' => $userId,
+                'puntos' => $puntos,
+                'error' => $e->getMessage()
+            ]);
+            return false;
         }
-
-        $collection = $pesoRegistro->collection;
-        $user = $collection->user;
-        
-        $pointRecord = $this->asignarPuntos($user, $puntos);
-
-        return [
-            'puntos_calculados' => $puntos,
-            'puntos_asignados' => true,
-            'puntos_totales' => $pointRecord->puntos,
-            'mensaje' => "Se asignaron {$puntos} puntos exitosamente."
-        ];
     }
 
     /**
-     * Validar si un registro de peso puede generar puntos
-     * 
-     * @param CollectionDetail $pesoRegistro
-     * @return bool
+     * Obtener puntos disponibles de un usuario
      */
-    public function puedeGenerarPuntos(CollectionDetail $pesoRegistro): bool
+    public function obtenerPuntosDisponibles(int $userId): int
     {
-        return $pesoRegistro->requisitos_separacion 
-            && $pesoRegistro->tipo_residuo === 'INORGANICO'
-            && $pesoRegistro->peso_kg > 0;
+        $point = Point::where('user_id', $userId)->first();
+        return $point ? $point->available_points : 0;
     }
 }

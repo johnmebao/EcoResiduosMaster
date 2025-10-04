@@ -13,6 +13,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PointController;
 use App\Http\Controllers\LocalidadController;
 use App\Http\Controllers\RutaController;
+use App\Http\Controllers\SolicitudPeligrososController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,6 +36,23 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/collections/{id}/mark-completed', [CollectionController::class, 'markCompleted'])->name('collections.markCompleted');
     Route::get('collections/{id}/register-waste', [CollectionController::class, 'registerWaste'])->name('collections.register-waste');
     Route::put('collections/{id}/update-waste', [CollectionController::class, 'updateWaste'])->name('collections.update-waste');
+    
+    // Rutas específicas para tipos de recolección (FASE 2)
+    Route::post('/collections/organicos', [CollectionController::class, 'storeOrganicos'])->name('collections.store-organicos');
+    Route::post('/collections/inorganicos', [CollectionController::class, 'storeInorganicos'])->name('collections.store-inorganicos');
+});
+
+// Solicitudes de Recolección de Residuos Peligrosos - Protegidas con autenticación
+Route::middleware(['auth'])->group(function () {
+    Route::resource('solicitudes-peligrosos', SolicitudPeligrososController::class);
+});
+
+// Gestión de Solicitudes de Peligrosos - Solo Administradores
+Route::middleware(['auth', 'role:Administrador'])->group(function () {
+    Route::get('/admin/solicitudes-peligrosos/pendientes', [SolicitudPeligrososController::class, 'pendientes'])->name('admin.solicitudes-peligrosos.pendientes');
+    Route::post('/admin/solicitudes-peligrosos/{id}/aprobar', [SolicitudPeligrososController::class, 'aprobar'])->name('admin.solicitudes-peligrosos.aprobar');
+    Route::post('/admin/solicitudes-peligrosos/{id}/rechazar', [SolicitudPeligrososController::class, 'rechazar'])->name('admin.solicitudes-peligrosos.rechazar');
+    Route::post('/admin/solicitudes-peligrosos/{id}/programar', [SolicitudPeligrososController::class, 'programar'])->name('admin.solicitudes-peligrosos.programar');
 });
 
 // Rutas para la gestión de puntos de reciclaje

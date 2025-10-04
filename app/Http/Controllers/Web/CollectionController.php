@@ -8,9 +8,12 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\Point;
 use App\Models\Setting;
+use App\Models\Localidad;
+use App\Models\Ruta;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CollectionDetail;
+use App\Jobs\EnviarNotificacionRecoleccion;
 
 class CollectionController extends Controller
 {
@@ -32,7 +35,9 @@ class CollectionController extends Controller
     {
         $users = User::all();
         $companies = Company::all();
-        return view('collections.create', compact('users', 'companies'));
+        $localidades = Localidad::where('activo', true)->orderBy('nombre')->get();
+        $rutas = Ruta::where('activo', true)->with(['localidad', 'company'])->get();
+        return view('collections.create', compact('users', 'companies', 'localidades', 'rutas'));
     }
 
     public function store(Request $request)
@@ -40,6 +45,8 @@ class CollectionController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'company_id' => 'required|exists:companies,id',
+            'localidad_id' => 'nullable|exists:localidads,id',
+            'ruta_id' => 'nullable|exists:rutas,id',
             'tipo_residuo' => 'required|string',
             'fecha_programada' => 'required|date',
             'peso_kg' => 'nullable|numeric|min:0',
@@ -52,9 +59,19 @@ class CollectionController extends Controller
             $validated['peso_kg'] = null;
         }
 
-        Collection::create($validated);
+        // Marcar como programada si tiene fecha
+        if (isset($validated['fecha_programada'])) {
+            $validated['programada'] = true;
+        }
 
-        return redirect()->route('collections.index')->with('success', 'Recolección creada exitosamente');
+        $collection = Collection::create($validated);
+
+        // Enviar email de confirmación de forma asíncrona
+        if ($collection->programada && $collection->user) {
+            EnviarNotificacionRecoleccion::dispatch($collection, 'confirmacion');
+        }
+
+        return redirect()->route('collections.index')->with('success', 'Recolección creada exitosamente. Se ha enviado un email de confirmación.');
     }
 
     public function show(Collection $collection)

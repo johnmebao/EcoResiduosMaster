@@ -14,6 +14,9 @@ use App\Http\Controllers\PointController;
 use App\Http\Controllers\LocalidadController;
 use App\Http\Controllers\RutaController;
 use App\Http\Controllers\SolicitudPeligrososController;
+use App\Http\Controllers\TiendaController;
+use App\Http\Controllers\CanjeController;
+use App\Http\Controllers\ReporteController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -126,3 +129,26 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+
+
+
+// FASE 3: MÓDULO DE CANJES - Protegidas con autenticación
+Route::middleware(['auth'])->group(function () {
+    Route::get('/canjes', [CanjeController::class, 'index'])->name('canjes.index');
+    Route::get('/canjes/create', [CanjeController::class, 'create'])->name('canjes.create');
+    Route::post('/canjes', [CanjeController::class, 'store'])->name('canjes.store');
+    Route::get('/canjes/{canje}', [CanjeController::class, 'show'])->name('canjes.show');
+});
+
+// FASE 3: GESTIÓN DE TIENDAS - Solo Administradores
+Route::middleware(['auth', 'role:Administrador'])->group(function () {
+    Route::resource('tiendas', TiendaController::class);
+});
+
+// FASE 3: REPORTES ADMINISTRATIVOS AVANZADOS - Solo Administradores
+Route::middleware(['auth', 'role:Administrador'])->group(function () {
+    Route::get('/admin/reportes/localidad', [ReporteController::class, 'reportePorLocalidad'])->name('admin.reportes.localidad');
+    Route::get('/admin/reportes/empresa', [ReporteController::class, 'reportePorEmpresa'])->name('admin.reportes.empresa');
+    Route::get('/admin/reportes/exportar-pdf', [ReporteController::class, 'exportarPDF'])->name('admin.reportes.exportar-pdf');
+    Route::get('/admin/reportes/exportar-csv', [ReporteController::class, 'exportarCSV'])->name('admin.reportes.exportar-csv');
+});

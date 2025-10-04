@@ -8,7 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class RecoleccionConfirmada extends Mailable
+class SolicitudRecibida extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -27,15 +27,14 @@ class RecoleccionConfirmada extends Mailable
      */
     public function build()
     {
-        return $this->subject('Recolección Confirmada - EcoResiduos')
-                    ->view('emails.recoleccion_confirmada')
+        return $this->subject('Solicitud de Recolección Recibida - EcoResiduos')
+                    ->view('emails.solicitud_recibida')
                     ->with([
                         'nombreUsuario' => $this->collection->user->name,
                         'tipoResiduo' => $this->collection->tipoResiduo->nombre,
-                        'fechaRecoleccion' => $this->collection->fecha_recoleccion->format('d/m/Y'),
+                        'fechaSolicitud' => $this->collection->created_at->format('d/m/Y H:i'),
                         'direccion' => $this->collection->direccion,
-                        'empresa' => $this->collection->empresa->nombre,
-                        'localidad' => $this->collection->localidad->nombre,
+                        'estadoSolicitud' => $this->collection->estado_solicitud,
                     ]);
     }
 }

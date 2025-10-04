@@ -8,7 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class RecoleccionConfirmada extends Mailable
+class RecoleccionCompletada extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -27,15 +27,16 @@ class RecoleccionConfirmada extends Mailable
      */
     public function build()
     {
-        return $this->subject('Recolección Confirmada - EcoResiduos')
-                    ->view('emails.recoleccion_confirmada')
+        $pesoKg = $this->collection->detail ? $this->collection->detail->peso_kg : 0;
+        
+        return $this->subject('Recolección Completada - EcoResiduos')
+                    ->view('emails.recoleccion_completada')
                     ->with([
                         'nombreUsuario' => $this->collection->user->name,
                         'tipoResiduo' => $this->collection->tipoResiduo->nombre,
                         'fechaRecoleccion' => $this->collection->fecha_recoleccion->format('d/m/Y'),
-                        'direccion' => $this->collection->direccion,
-                        'empresa' => $this->collection->empresa->nombre,
-                        'localidad' => $this->collection->localidad->nombre,
+                        'pesoKg' => $pesoKg,
+                        'puntosGanados' => $pesoKg, // Simplificado, usar PuntosService en producción
                     ]);
     }
 }

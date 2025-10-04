@@ -8,9 +8,12 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\Point;
 use App\Models\Setting;
+use App\Models\Localidad;
+use App\Models\Ruta;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CollectionDetail;
+use App\Jobs\EnviarNotificacionRecoleccion;
 
 class CollectionController extends Controller
 {
@@ -32,7 +35,9 @@ class CollectionController extends Controller
     {
         $users = User::all();
         $companies = Company::all();
-        return view('collections.create', compact('users', 'companies'));
+        $localidades = Localidad::where('activo', true)->orderBy('nombre')->get();
+        $rutas = Ruta::where('activo', true)->with(['localidad', 'company'])->get();
+        return view('collections.create', compact('users', 'companies', 'localidades', 'rutas'));
     }
 
     public function store(Request $request)
@@ -40,6 +45,8 @@ class CollectionController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'company_id' => 'required|exists:companies,id',
+            'localidad_id' => 'nullable|exists:localidads,id',
+            'ruta_id' => 'nullable|exists:rutas,id',
             'tipo_residuo' => 'required|string',
             'fecha_programada' => 'required|date',
             'peso_kg' => 'nullable|numeric|min:0',
@@ -52,9 +59,19 @@ class CollectionController extends Controller
             $validated['peso_kg'] = null;
         }
 
-        Collection::create($validated);
+        // Marcar como programada si tiene fecha
+        if (isset($validated['fecha_programada'])) {
+            $validated['programada'] = true;
+        }
 
-        return redirect()->route('collections.index')->with('success', 'Recolección creada exitosamente');
+        $collection = Collection::create($validated);
+
+        // Enviar email de confirmación de forma asíncrona
+        if ($collection->programada && $collection->user) {
+            EnviarNotificacionRecoleccion::dispatch($collection, 'confirmacion');
+        }
+
+        return redirect()->route('collections.index')->with('success', 'Recolección creada exitosamente. Se ha enviado un email de confirmación.');
     }
 
     public function show(Collection $collection)
@@ -227,6 +244,158 @@ class CollectionController extends Controller
                 ->back()
                 ->with('error', 'Error al registrar los residuos: ' . $e->getMessage())
                 ->withInput();
+        }
+    }
+
+    /**
+     * Crear recolección de orgánicos (automática según localidad y ruta)
+     */
+    public function storeOrganicos(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'company_id' => 'required|exists:companies,id',
+            'localidad_id' => 'required|exists:localidads,id',
+            'notas' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            $user = User::findOrFail($request->user_id);
+
+            // Verificar que no exista una recolección orgánica esta semana
+            $startOfWeek = now()->startOfWeek();
+            $endOfWeek = now()->endOfWeek();
+
+            $existeRecoleccion = Collection::where('user_id', $user->id)
+                ->where('tipo_residuo', Collection::TIPO_ORGANICO)
+                ->whereBetween('fecha_programada', [$startOfWeek, $endOfWeek])
+                ->whereIn('estado', ['pendiente', 'programada'])
+                ->exists();
+
+            if ($existeRecoleccion) {
+                return redirect()->back()
+                    ->with('error', 'Ya existe una recolección de orgánicos programada para esta semana.');
+            }
+
+            // Obtener la ruta de la localidad
+            $ruta = Ruta::where('localidad_id', $request->localidad_id)
+                ->where('activo', true)
+                ->first();
+
+            if (!$ruta) {
+                return redirect()->back()
+                    ->with('error', 'No hay una ruta activa configurada para esta localidad.');
+            }
+
+            // Obtener la próxima fecha de recolección según el día de la ruta
+            $fechaProgramada = $ruta->getProximaFechaRecoleccion();
+
+            // Crear la recolección
+            $collection = Collection::create([
+                'user_id' => $request->user_id,
+                'company_id' => $request->company_id,
+                'localidad_id' => $request->localidad_id,
+                'ruta_id' => $ruta->id,
+                'tipo_residuo' => Collection::TIPO_ORGANICO,
+                'programada' => true,
+                'fecha_programada' => $fechaProgramada,
+                'estado' => 'programada',
+                'notas' => $request->notas ?? 'Recolección automática de orgánicos',
+            ]);
+
+            // Enviar notificación
+            if ($collection->user) {
+                EnviarNotificacionRecoleccion::dispatch($collection, 'confirmacion');
+            }
+
+            return redirect()->route('collections.index')
+                ->with('success', "Recolección de orgánicos programada para el {$fechaProgramada->format('d/m/Y')}");
+
+        } catch (\Exception $e) {
+            \Log::error('Error al crear recolección de orgánicos', [
+                'error' => $e->getMessage(),
+                'user_id' => $request->user_id
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Error al programar la recolección: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Crear recolección de inorgánicos con validaciones de frecuencia
+     */
+    public function storeInorganicos(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'company_id' => 'required|exists:companies,id',
+            'localidad_id' => 'required|exists:localidads,id',
+            'ruta_id' => 'nullable|exists:rutas,id',
+            'fecha_programada' => 'required|date|after_or_equal:today',
+            'tipo_recoleccion' => 'required|in:programada,demanda',
+            'notas' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            $userId = $request->user_id;
+            $fechaProgramada = \Carbon\Carbon::parse($request->fecha_programada);
+            $tipoRecoleccion = $request->tipo_recoleccion;
+
+            // Validar frecuencia: máximo 2 veces por semana para programadas
+            if ($tipoRecoleccion === 'programada') {
+                $startOfWeek = $fechaProgramada->copy()->startOfWeek();
+                $endOfWeek = $fechaProgramada->copy()->endOfWeek();
+
+                $recoleccionesSemana = Collection::where('user_id', $userId)
+                    ->where('tipo_residuo', Collection::TIPO_INORGANICO)
+                    ->whereBetween('fecha_programada', [$startOfWeek, $endOfWeek])
+                    ->whereIn('estado', ['pendiente', 'programada'])
+                    ->count();
+
+                if ($recoleccionesSemana >= 2) {
+                    return redirect()->back()
+                        ->with('error', 'Ya tiene 2 recolecciones de inorgánicos programadas esta semana. Máximo permitido: 2 por semana.');
+                }
+            }
+
+            // Validar que no exista duplicado en la misma fecha
+            $existeDuplicado = Collection::existeDuplicado($userId, Collection::TIPO_INORGANICO, $fechaProgramada);
+
+            if ($existeDuplicado) {
+                return redirect()->back()
+                    ->with('error', 'Ya existe una recolección de inorgánicos programada para esta fecha.');
+            }
+
+            // Crear la recolección
+            $collection = Collection::create([
+                'user_id' => $request->user_id,
+                'company_id' => $request->company_id,
+                'localidad_id' => $request->localidad_id,
+                'ruta_id' => $request->ruta_id,
+                'tipo_residuo' => Collection::TIPO_INORGANICO,
+                'programada' => true,
+                'fecha_programada' => $fechaProgramada,
+                'estado' => 'programada',
+                'notas' => $request->notas ?? "Recolección de inorgánicos - {$tipoRecoleccion}",
+            ]);
+
+            // Enviar notificación
+            if ($collection->user) {
+                EnviarNotificacionRecoleccion::dispatch($collection, 'confirmacion');
+            }
+
+            return redirect()->route('collections.index')
+                ->with('success', "Recolección de inorgánicos programada para el {$fechaProgramada->format('d/m/Y')}");
+
+        } catch (\Exception $e) {
+            \Log::error('Error al crear recolección de inorgánicos', [
+                'error' => $e->getMessage(),
+                'user_id' => $request->user_id
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Error al programar la recolección: ' . $e->getMessage());
         }
     }
 }

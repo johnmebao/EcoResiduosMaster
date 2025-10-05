@@ -47,10 +47,8 @@ class CollectionController extends Controller
             'company_id' => 'required|exists:companies,id',
             'localidad_id' => 'nullable|exists:localidads,id',
             'ruta_id' => 'nullable|exists:rutas,id',
-            'tipo_residuo' => 'required|string',
             'fecha_programada' => 'required|date',
-            'peso_kg' => 'nullable|numeric|min:0',
-            'estado' => 'required|string',
+            'tipo_residuo' => 'required|string',
             'notas' => 'nullable|string',
         ]);
 
@@ -62,6 +60,11 @@ class CollectionController extends Controller
         // Marcar como programada si tiene fecha
         if (isset($validated['fecha_programada'])) {
             $validated['programada'] = true;
+        }
+
+        // Asegurarnos de que tipo_residuo esté presente
+        if (!isset($validated['tipo_residuo'])) {
+            $validated['tipo_residuo'] = request('tipo_residuo');
         }
 
         $collection = Collection::create($validated);

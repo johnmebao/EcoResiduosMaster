@@ -336,6 +336,11 @@ return [
             'icon' => 'fas fa-file-alt',
         ],
         [
+            'text' => 'Canjes',
+            'url' => '/canjes',
+            'icon' => 'fas fa-exchange-alt',
+        ],
+        [
             'text' => 'Configuraciones',
             'url' => '/settings',
             'icon' => 'fas fa-cogs',

@@ -1,8 +1,6 @@
-
 <?php
 
 namespace App\Services\PuntosCalculators;
-
 use App\Contracts\PuntosCalculatorInterface;
 
 class SimplePuntosCalculator implements PuntosCalculatorInterface

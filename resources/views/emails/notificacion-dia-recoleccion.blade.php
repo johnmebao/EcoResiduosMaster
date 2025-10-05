@@ -1,10 +1,65 @@
+@extends('adminlte::page')
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoy es tu Recolección</title>
+@section('title', 'Dashboard')
+
+@section('content_header')
+    <h1>Dashboard</h1>
+@stop
+
+@section('content')
+        <div class="header">
+        <h1>🚛 ¡Hoy es tu Recolección!</h1>
+    </div>
+    <div class="content">
+        <p>Hola <strong>{{ $usuario->name }}</strong>,</p>
+        
+        <div class="alert">
+            <p><strong>¡Atención!</strong> Hoy es el día de tu recolección programada.</p>
+        </div>
+        
+        @if($turno)
+        <div class="turno-box">
+            Tu número de turno en la ruta: <span style="font-size: 36px;">{{ $turno }}</span>
+        </div>
+        @endif
+        
+        <p>Detalles de tu recolección:</p>
+        
+        <div class="info-box">
+            <p><strong>Tipo de Residuo:</strong> {{ $recoleccion->tipo_residuo }}</p>
+            <p><strong>Fecha:</strong> {{ $recoleccion->fecha_programada ? $recoleccion->fecha_programada->format('d/m/Y') : 'Hoy' }}</p>
+            @if($localidad)
+                <p><strong>Localidad:</strong> {{ $localidad->nombre }}</p>
+            @endif
+            @if($ruta)
+                <p><strong>Ruta:</strong> {{ $ruta->nombre }}</p>
+                <p><strong>Horario Estimado:</strong> {{ $ruta->hora_inicio }} - {{ $ruta->hora_fin }}</p>
+            @endif
+            @if($empresa)
+                <p><strong>Empresa Recolectora:</strong> {{ $empresa->name }}</p>
+            @endif
+        </div>
+        
+        <p><strong>Instrucciones finales:</strong></p>
+        <ul>
+            <li>Coloca tus residuos en un lugar visible</li>
+            <li>Asegúrate de que estén correctamente embolsados</li>
+            <li>El camión pasará aproximadamente en el horario indicado</li>
+            @if($turno)
+            <li>Tu turno es el número {{ $turno }} en la ruta</li>
+            @endif
+        </ul>
+        
+        <p>¡Gracias por cuidar nuestro planeta!</p>
+        
+        <p>Saludos,<br><strong>Equipo EcoResiduos</strong></p>
+    </div>
+    <div class="footer">
+        <p>Este es un correo automático, por favor no responder.</p>
+    </div>
+@stop
+
+@section('css')
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,57 +115,8 @@
             color: #666;
         }
     </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🚛 ¡Hoy es tu Recolección!</h1>
-    </div>
-    <div class="content">
-        <p>Hola <strong>{{ $usuario->name }}</strong>,</p>
-        
-        <div class="alert">
-            <p><strong>¡Atención!</strong> Hoy es el día de tu recolección programada.</p>
-        </div>
-        
-        @if($turno)
-        <div class="turno-box">
-            Tu número de turno en la ruta: <span style="font-size: 36px;">{{ $turno }}</span>
-        </div>
-        @endif
-        
-        <p>Detalles de tu recolección:</p>
-        
-        <div class="info-box">
-            <p><strong>Tipo de Residuo:</strong> {{ $recoleccion->tipo_residuo }}</p>
-            <p><strong>Fecha:</strong> {{ $recoleccion->fecha_programada ? $recoleccion->fecha_programada->format('d/m/Y') : 'Hoy' }}</p>
-            @if($localidad)
-                <p><strong>Localidad:</strong> {{ $localidad->nombre }}</p>
-            @endif
-            @if($ruta)
-                <p><strong>Ruta:</strong> {{ $ruta->nombre }}</p>
-                <p><strong>Horario Estimado:</strong> {{ $ruta->hora_inicio }} - {{ $ruta->hora_fin }}</p>
-            @endif
-            @if($empresa)
-                <p><strong>Empresa Recolectora:</strong> {{ $empresa->name }}</p>
-            @endif
-        </div>
-        
-        <p><strong>Instrucciones finales:</strong></p>
-        <ul>
-            <li>Coloca tus residuos en un lugar visible</li>
-            <li>Asegúrate de que estén correctamente embolsados</li>
-            <li>El camión pasará aproximadamente en el horario indicado</li>
-            @if($turno)
-            <li>Tu turno es el número {{ $turno }} en la ruta</li>
-            @endif
-        </ul>
-        
-        <p>¡Gracias por cuidar nuestro planeta!</p>
-        
-        <p>Saludos,<br><strong>Equipo EcoResiduos</strong></p>
-    </div>
-    <div class="footer">
-        <p>Este es un correo automático, por favor no responder.</p>
-    </div>
-</body>
-</html>
+@stop
+
+@section('js')
+    <script> console.log("Hi, I'm using the Laravel-AdminLTE package!"); </script>
+@stop

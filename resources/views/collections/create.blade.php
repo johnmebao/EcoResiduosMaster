@@ -109,9 +109,21 @@
 
                 {{-- Fecha Programada --}}
                 <div class="col-md-6">
-                    <x-adminlte-input-date name="fecha_programada" label="Fecha Programada" 
-                        label-class="text-warning" value="{{ old('fecha_programada') }}" required>
-                        <x-slot name="prependSlot">
+                    @php
+                    $config = [
+                        "format" => "YYYY-MM-DD",
+                        "dayViewHeaderFormat" => "MMMM YYYY",
+                        "minDate" => "js:moment()",
+                    ];
+                    @endphp
+                    <x-adminlte-input-date name="fecha_programada" 
+                        label="Fecha Programada" 
+                        label-class="text-warning"
+                        :config="$config"
+                        value="{{ old('fecha_programada', date('Y-m-d')) }}"
+                        placeholder="Seleccione una fecha..."
+                        required>
+                        <x-slot name="appendSlot">
                             <div class="input-group-text bg-gradient-warning">
                                 <i class="fas fa-calendar-alt"></i>
                             </div>
@@ -122,7 +134,7 @@
 
             <div class="row">
                 {{-- Turno --}}
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                     <x-adminlte-input name="turno_num" label="Número de Turno" type="number" 
                         label-class="text-secondary" value="{{ old('turno_num') }}" min="1">
                         <x-slot name="prependSlot">
@@ -131,10 +143,10 @@
                             </div>
                         </x-slot>
                     </x-adminlte-input>
-                </div>
+                </div> --}}
 
                 {{-- Peso --}}
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                     <x-adminlte-input name="peso_kg" label="Peso (kg)" type="number" step="0.01"
                         label-class="text-secondary" value="{{ old('peso_kg') }}" min="0">
                         <x-slot name="prependSlot">
@@ -143,10 +155,10 @@
                             </div>
                         </x-slot>
                     </x-adminlte-input>
-                </div>
+                </div> --}}
 
                 {{-- Estado --}}
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                     <x-adminlte-select name="estado" label="Estado" label-class="text-danger" required>
                         <x-slot name="prependSlot">
                             <div class="input-group-text bg-gradient-danger">
@@ -160,7 +172,7 @@
                             </option>
                         @endforeach
                     </x-adminlte-select>
-                </div>
+                </div> --}}
             </div>
 
             {{-- Sección para Residuos Peligrosos --}}
@@ -277,6 +289,8 @@
 
 @section('css')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {{-- Tempus Dominus CSS para el datepicker --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css"/>
     <style>
         .input-group-text {
             min-width: 45px;
@@ -287,8 +301,28 @@
 
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{{-- Moment.js y Tempus Dominus para el datepicker --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Configuración del datepicker
+    $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+        locale: 'es',
+        format: 'YYYY-MM-DD',
+        icons: {
+            time: 'far fa-clock',
+            date: 'far fa-calendar',
+            up: 'fas fa-arrow-up',
+            down: 'fas fa-arrow-down',
+            previous: 'fas fa-chevron-left',
+            next: 'fas fa-chevron-right',
+            today: 'fas fa-calendar-check',
+            clear: 'fas fa-trash',
+            close: 'fas fa-times'
+        }
+    });
+
     // Mostrar/ocultar sección de residuos peligrosos
     $('select[name="tipo_residuo"]').on('change', function() {
         if ($(this).val() === 'PELIGROSO') {

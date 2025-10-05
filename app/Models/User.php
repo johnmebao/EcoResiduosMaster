@@ -50,4 +50,21 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the user's points record.
+     */
+    public function point()
+    {
+        return $this->hasOne(Point::class, 'usuario_id');
+    }
+
+    /**
+     * Get the available points
+     */
+    public function getAvailablePointsAttribute()
+    {
+        return $this->point ? ($this->point->puntos - $this->point->puntos_canjeados) : 0;
+
+    }
 }

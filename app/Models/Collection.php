@@ -130,6 +130,17 @@ class Collection extends Model
     }
 
     /**
+     * Relación: Una recolección puede tener un registro de ganancia de puntos en canjes
+     * Nota: Esto es para trackear cuando se otorgan puntos por completar la recolección
+     */
+    public function canjeGanancia()
+    {
+        return $this->hasOne(Canje::class, 'user_id', 'user_id')
+            ->where('codigo_canje', 'like', 'GANANCIA-' . $this->id . '-%')
+            ->latest();
+    }
+
+    /**
      * Relación: Usuario que aprobó la solicitud
      */
     public function aprobador()

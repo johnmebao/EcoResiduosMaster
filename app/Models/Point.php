@@ -14,13 +14,25 @@ class Point extends Model
 
     protected $fillable = [
         'usuario_id', 
-        'puntos'
+        'puntos',
+        'puntos_canjeados',
+        'codigo_canje'
     ];
+
+    protected $appends = ['available_points'];
 
     // Relación con el usuario
     public function user()
     {
         return $this->belongsTo(User::class, 'usuario_id');
+    }
+
+    /**
+     * Get the available points
+     */
+    public function getAvailablePointsAttribute()
+    {
+        return $this->puntos - $this->puntos_canjeados;
     }
 
     // Método para agregar puntos

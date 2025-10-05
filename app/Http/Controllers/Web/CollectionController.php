@@ -47,8 +47,10 @@ class CollectionController extends Controller
             'company_id' => 'required|exists:companies,id',
             'localidad_id' => 'nullable|exists:localidads,id',
             'ruta_id' => 'nullable|exists:rutas,id',
-            'fecha_programada' => 'required|date',
             'tipo_residuo' => 'required|string',
+            'fecha_programada' => 'required|date',
+            'peso_kg' => 'nullable|numeric|min:0',
+            'estado' => 'required|string',
             'notas' => 'nullable|string',
         ]);
 
@@ -60,11 +62,6 @@ class CollectionController extends Controller
         // Marcar como programada si tiene fecha
         if (isset($validated['fecha_programada'])) {
             $validated['programada'] = true;
-        }
-
-        // Asegurarnos de que tipo_residuo esté presente
-        if (!isset($validated['tipo_residuo'])) {
-            $validated['tipo_residuo'] = request('tipo_residuo');
         }
 
         $collection = Collection::create($validated);
@@ -208,17 +205,49 @@ class CollectionController extends Controller
             \Log::info("Calculando puntos desde el Setting: {$pointsPerKg} puntos/kg * {$pesoTotal} kg = {$puntos} puntos");
 
             // Buscar el registro Point del usuario; si no existe, lo crea y suma los puntos
-            $point = Point::firstOrNew(['usuario_id' => $collection->user_id]); // busca por usuario
+            $point = Point::firstOrNew(['usuario_id' => $collection->user_id]);
             $point->puntos = ($point->puntos ?? 0) + $puntos;
             $point->save();
 
-            if (Point::where('usuario_id', $collection->user_id)->exists()) {
-                $point->puntos = $point->puntos + $puntos;
-            } else {
-                Point::create([
-                    'usuario_id' => $collection->user_id,
-                    'puntos' => $puntos,
+            \Log::info("Puntos actualizados para usuario {$collection->user_id}. Total: {$point->puntos}");
+
+            // NUEVO: Registrar la ganancia de puntos en la tabla canjes para historial
+            // Nota: La tabla canjes está diseñada para canjes/redenciones, pero la usaremos
+            // también para registrar ganancias de puntos con tienda_id = null o una tienda especial
+            try {
+                // Buscar o crear una "tienda" especial para representar ganancias de puntos por recolección
+                $tiendaSistema = \App\Models\Tienda::firstOrCreate(
+                    ['nombre' => 'Sistema - Ganancia por Recolección'],
+                    [
+                        'descripcion' => 'Registro automático de puntos ganados por recolecciones completadas',
+                        'direccion' => 'Sistema',
+                        'telefono' => '0000000000',
+                        'puntos_requeridos' => 0,
+                        'descuento_porcentaje' => 0,
+                        'activo' => false, // No visible para canjes reales
+                    ]
+                );
+
+                // Generar código único para el registro de ganancia
+                $codigoGanancia = 'GANANCIA-' . $collection->id . '-' . now()->timestamp;
+
+                // Crear registro en canjes para trackear la ganancia de puntos
+                $canjeGanancia = \App\Models\Canje::create([
+                    'user_id' => $collection->user_id,
+                    'tienda_id' => $tiendaSistema->id,
+                    'puntos_canjeados' => -$puntos, // Negativo indica ganancia, no gasto
+                    'descuento_obtenido' => 0,
+                    'codigo_canje' => $codigoGanancia,
+                    'estado' => 'usado', // Marcado como usado porque ya se aplicó
+                    'fecha_canje' => now(),
                 ]);
+
+                \Log::info("Registro de ganancia de puntos creado en canjes. ID: {$canjeGanancia->id}, Puntos: {$puntos}");
+
+            } catch (\Exception $e) {
+                // Si falla el registro en canjes, solo logueamos pero no detenemos el proceso
+                // porque los puntos ya fueron guardados en la tabla points
+                \Log::error("Error al registrar ganancia en tabla canjes: " . $e->getMessage());
             }
 
             

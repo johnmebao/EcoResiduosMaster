@@ -19,6 +19,8 @@ return new class extends Migration
             $table->decimal('descuento_porcentaje', 5, 2)->default(0);
             $table->integer('puntos_requeridos')->default(0);
             $table->boolean('activo')->default(true);
+            $table->string('direccion')->nullable()->after('descripcion');
+            $table->string('telefono', 20)->nullable()->after('direccion');
             $table->timestamps();
         });
     }

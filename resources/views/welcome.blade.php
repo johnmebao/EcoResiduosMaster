@@ -1,908 +1,841 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="EcoResiduos - Empresa líder en recolección de residuos. Sistema de puntos, recompensas y compromiso con el medio ambiente.">
-    <meta name="keywords" content="recolección de residuos, reciclaje, residuos orgánicos, medio ambiente, sostenibilidad">
-
-    <title>EcoResiduos - Recolección Inteligente de Residuos</title>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&family=poppins:600,700,800" rel="stylesheet" />
+    <title>{{ config('app.name', 'EcoResiduos') }} - Gestión Inteligente de Residuos</title>
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #10b981;
+            --primary-green-dark: #059669;
+            --secondary-green: #34d399;
+            --light-green: #d1fae5;
+            --dark-green: #065f46;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --border-light: #e5e7eb;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        h1, h2, h3 {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        /* Animaciones personalizadas */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--white);
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        @keyframes pulse-custom {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .animate-fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 1s ease-out forwards;
-        }
-
-        .animate-float {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .delay-100 {
-            animation-delay: 0.1s;
-        }
-
-        .delay-200 {
-            animation-delay: 0.2s;
-        }
-
-        .delay-300 {
-            animation-delay: 0.3s;
-        }
-
-        .delay-400 {
-            animation-delay: 0.4s;
-        }
-
-        /* Gradiente Hero */
-        .hero-gradient {
-            background: linear-gradient(135deg, #059669 0%, #10b981 50%, #3b82f6 100%);
-        }
-
-        .hero-pattern {
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.3) 0%, transparent 50%);
-        }
-
-        /* Efectos hover mejorados */
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Botones con efecto */
-        .btn-primary {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary::before {
-            content: '';
-            position: absolute;
+        /* Header Styles */
+        .header {
+            position: fixed;
             top: 0;
-            left: -100%;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s ease;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 1rem 0;
         }
 
-        .btn-primary:hover::before {
-            left: 100%;
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Iconos con efecto pulse */
-        .icon-pulse {
-            animation: pulse-custom 2s ease-in-out infinite;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            text-decoration: none;
         }
 
-        /* Scroll reveal */
-        .scroll-reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease-out;
+        .logo svg {
+            width: 32px;
+            height: 32px;
         }
 
-        .scroll-reveal.revealed {
-            opacity: 1;
-            transform: translateY(0);
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
         }
 
-        /* Contador de estadísticas */
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-green);
+        }
+
+        .btn-primary {
+            background: var(--primary-green);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-green-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-green);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+            border: 2px solid var(--primary-green);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-green);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            margin-top: 60px;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.2;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-text h1 .highlight {
+            color: var(--primary-green);
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-image {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: -3rem auto 4rem;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
         .stat-number {
-            background: linear-gradient(135deg, #10b981, #059669);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-green);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.125rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 2px solid var(--border-light);
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            border-color: var(--primary-green);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--light-green);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-icon svg {
+            width: 32px;
+            height: 32px;
+            color: var(--primary-green);
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .service-card p {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* Process Steps */
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .process-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .process-step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -1rem;
+            top: 2rem;
+            font-size: 2rem;
+            color: var(--primary-green);
+            opacity: 0.3;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .process-step h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        .process-step p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Benefits Grid */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .benefit-card {
+            display: flex;
+            gap: 1.5rem;
+            padding: 2rem;
+            background: var(--bg-light);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .benefit-card:hover {
+            background: var(--light-green);
+        }
+
+        .benefit-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-green);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .benefit-icon svg {
+            width: 28px;
+            height: 28px;
+            color: var(--white);
+        }
+
+        .benefit-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .benefit-content p {
+            color: var(--text-light);
+        }
+
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+            padding: 5rem 2rem;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta .btn-primary {
+            background: var(--white);
+            color: var(--primary-green);
+            font-size: 1.125rem;
+            padding: 1rem 2.5rem;
+        }
+
+        .cta .btn-primary:hover {
+            background: var(--light-green);
+            color: var(--primary-green-dark);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: var(--white);
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-section ul li a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--secondary-green);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .process-steps {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .process-step:not(:last-child)::after {
+                display: none;
+            }
+
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .hero-text p {
+                font-size: 1rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .services-grid,
+            .benefits-grid,
+            .process-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .hero-buttons .btn-primary,
+            .hero-buttons .btn-secondary {
+                width: 100%;
+                text-align: center;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .cta h2 {
+                font-size: 2rem;
+            }
+
+            .cta p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav {
+                padding: 0 1rem;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+            }
+
+            .section {
+                padding: 3rem 1.5rem;
+            }
         }
     </style>
 </head>
-
-<body class="bg-gray-50 text-gray-900 antialiased">
-    
-    <!-- Navbar -->
-    <nav class="fixed w-full top-0 z-50 bg-white/90 backdrop-blur-lg shadow-md">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
-                <a href="/" class="flex items-center space-x-3 group">
-                    <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 p-2.5 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-leaf text-white text-2xl"></i>
-                    </div>
-                    <span class="font-bold text-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
-                        EcoResiduos
-                    </span>
-                </a>
-
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#servicios" class="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Servicios</a>
-                    <a href="#como-funciona" class="text-gray-700 hover:text-emerald-600 font-medium transition-colors">¿Cómo Funciona?</a>
-                    <a href="#beneficios" class="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Beneficios</a>
-                </div>
-
-                <!-- Auth Buttons -->
-                @if (Route::has('login'))
-                <div class="hidden md:flex items-center space-x-4">
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="px-6 py-2.5 rounded-lg font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 transition-all shadow-lg hover:shadow-xl">
-                            Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="px-6 py-2.5 rounded-lg font-semibold text-gray-700 hover:text-emerald-600 hover:bg-gray-100 transition-all">
-                            Iniciar Sesión
-                        </a>
-                        @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="px-6 py-2.5 rounded-lg font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 transition-all shadow-lg hover:shadow-xl btn-primary">
-                            Registrarse
-                        </a>
-                        @endif
-                    @endauth
-                </div>
-                @endif
-
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="md:hidden text-gray-700 hover:text-emerald-600">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
-            <div class="px-6 py-4 space-y-4">
-                <a href="#servicios" class="block text-gray-700 hover:text-emerald-600 font-medium">Servicios</a>
-                <a href="#como-funciona" class="block text-gray-700 hover:text-emerald-600 font-medium">¿Cómo Funciona?</a>
-                <a href="#beneficios" class="block text-gray-700 hover:text-emerald-600 font-medium">Beneficios</a>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="logo">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l8 3.6v8.72c0 4.45-3.08 8.63-7 9.81V4.18l-1-0.45v17.08c-3.92-1.18-7-5.36-7-9.81V7.78l7-3.15z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <span>EcoResiduos</span>
+            </a>
+            <div class="nav-links">
                 @if (Route::has('login'))
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="block px-6 py-2.5 rounded-lg font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 text-center">
-                            Dashboard
-                        </a>
+                        <a href="{{ url('/dashboard') }}" class="btn-primary">Dashboard</a>
                     @else
-                        <a href="{{ route('login') }}" class="block px-6 py-2.5 rounded-lg font-semibold text-gray-700 hover:bg-gray-100 text-center">
-                            Iniciar Sesión
-                        </a>
+                        <a href="{{ route('login') }}">Iniciar Sesión</a>
                         @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="block px-6 py-2.5 rounded-lg font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 text-center">
-                            Registrarse
-                        </a>
+                            <a href="{{ route('register') }}" class="btn-primary">Registrarse</a>
                         @endif
                     @endauth
                 @endif
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <!-- Hero Section -->
-    <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 hero-gradient hero-pattern overflow-hidden">
-        <!-- Elementos decorativos -->
-        <div class="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-float"></div>
-        <div class="absolute bottom-20 right-10 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-float delay-200"></div>
-
-        <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <!-- Contenido -->
-                <div class="text-white animate-fade-in-up">
-                    <div class="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-                        <i class="fas fa-leaf text-emerald-200"></i>
-                        <span class="text-sm font-semibold">Compromiso con el Medio Ambiente</span>
-                    </div>
-                    
-                    <h1 class="text-5xl lg:text-7xl font-extrabold leading-tight mb-6">
-                        Transformando Residuos en 
-                        <span class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-2xl inline-block">Oportunidades</span>
-                    </h1>
-                    
-                    <p class="text-xl lg:text-2xl text-white/90 mb-8 leading-relaxed">
-                        Únete a la revolución del reciclaje inteligente. Gana puntos, contribuye al planeta y recibe recompensas increíbles.
-                    </p>
-
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="{{ route('register') }}" class="group px-8 py-4 rounded-xl font-bold text-emerald-700 bg-white hover:bg-gray-50 transition-all shadow-2xl hover:shadow-3xl transform hover:scale-105 inline-flex items-center justify-center space-x-2">
-                            <span>Comenzar Ahora</span>
-                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                        <a href="{{ route('login') }}" class="px-8 py-4 rounded-xl font-bold text-white border-2 border-white/50 hover:bg-white/10 backdrop-blur-sm transition-all inline-flex items-center justify-center space-x-2">
-                            <span>Iniciar Sesión</span>
-                            <i class="fas fa-sign-in-alt"></i>
-                        </a>
-                    </div>
-
-                    <!-- Estadísticas rápidas -->
-                    <div class="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-white/20">
-                        <div>
-                            <div class="text-4xl font-bold mb-2">5K+</div>
-                            <div class="text-white/80 text-sm">Usuarios Activos</div>
-                        </div>
-                        <div>
-                            <div class="text-4xl font-bold mb-2">50K+</div>
-                            <div class="text-white/80 text-sm">Kg Reciclados</div>
-                        </div>
-                        <div>
-                            <div class="text-4xl font-bold mb-2">98%</div>
-                            <div class="text-white/80 text-sm">Satisfacción</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Imagen -->
-                <div class="hidden lg:block animate-fade-in-up delay-200">
-                    <div class="relative">
-                        <!-- Tarjeta de imagen con efecto glassmorphism -->
-                        <div class="relative bg-white/10 backdrop-blur-lg rounded-3xl p-4 shadow-2xl border border-white/20">
-                            <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?q=80&w=2940&auto=format&fit=crop" 
-                                 alt="Reciclaje y sostenibilidad" 
-                                 class="rounded-2xl w-full h-auto object-cover shadow-xl">
-                            
-                            <!-- Tarjetas flotantes con información -->
-                            <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-2xl p-4 animate-float">
-                                <div class="flex items-center space-x-3">
-                                    <div class="bg-emerald-100 p-3 rounded-xl">
-                                        <i class="fas fa-recycle text-emerald-600 text-2xl"></i>
-                                    </div>
-                                    <div>
-                                        <div class="text-2xl font-bold text-gray-900">2,450</div>
-                                        <div class="text-sm text-gray-600">Puntos Ganados</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="absolute -top-6 -right-6 bg-white rounded-2xl shadow-2xl p-4 animate-float delay-100">
-                                <div class="flex items-center space-x-3">
-                                    <div class="bg-blue-100 p-3 rounded-xl">
-                                        <i class="fas fa-leaf text-blue-600 text-2xl"></i>
-                                    </div>
-                                    <div>
-                                        <div class="text-2xl font-bold text-gray-900">-85%</div>
-                                        <div class="text-sm text-gray-600">CO₂ Reducido</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Gestión Inteligente de <span class="highlight">Residuos</span> para un Futuro Sostenible</h1>
+                <p>Transformamos la manera en que las empresas y hogares gestionan sus residuos. Soluciones ecológicas, eficientes y tecnológicas para un planeta más limpio.</p>
+                <div class="hero-buttons">
+                    <a href="#contacto" class="btn-primary">Solicitar Servicio</a>
+                    <a href="#servicios" class="btn-secondary">Conocer Más</a>
                 </div>
             </div>
-        </div>
-
-        <!-- Wave separator -->
-        <div class="absolute bottom-0 left-0 w-full">
-            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
-                <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V120Z" fill="#F9FAFB"/>
-            </svg>
+            <div class="hero-image">
+                <svg viewBox="0 0 600 400" style="width: 100%; height: auto;">
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="600" height="400" fill="#d1fae5"/>
+                    <circle cx="300" cy="200" r="120" fill="url(#grad1)" opacity="0.3"/>
+                    <circle cx="300" cy="200" r="80" fill="url(#grad1)" opacity="0.5"/>
+                    <path d="M 250 180 L 270 200 L 250 220 M 350 180 L 330 200 L 350 220" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/>
+                    <circle cx="300" cy="200" r="40" fill="url(#grad1)"/>
+                    <text x="300" y="340" font-size="24" font-weight="bold" fill="#065f46" text-anchor="middle">♻️ Reciclaje Inteligente</text>
+                </svg>
+            </div>
         </div>
     </section>
 
-    <!-- Sección Nuestros Servicios -->
-    <section id="servicios" class="py-20 lg:py-32 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <!-- Header -->
-            <div class="text-center mb-16 scroll-reveal">
-                <div class="inline-flex items-center space-x-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full mb-4">
-                    <i class="fas fa-recycle"></i>
-                    <span class="text-sm font-semibold">Tipos de Residuos</span>
+    <!-- Stats Section -->
+    <div class="stats">
+        <div class="stat-card">
+            <span class="stat-number">15K+</span>
+            <span class="stat-label">Clientes Satisfechos</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">500+</span>
+            <span class="stat-label">Toneladas Recicladas</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">98%</span>
+            <span class="stat-label">Tasa de Reciclaje</span>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section class="section" id="servicios">
+        <div class="section-header">
+            <h2>Nuestros Servicios</h2>
+            <p>Soluciones completas de gestión de residuos adaptadas a tus necesidades específicas</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
                 </div>
-                <h2 class="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6">
-                    Nuestros Servicios
-                </h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Recolectamos y procesamos diferentes tipos de residuos de manera responsable y eficiente
-                </p>
+                <h3>Recolección Residencial</h3>
+                <p>Servicio puerta a puerta con horarios flexibles y opciones de reciclaje diferenciado para hogares.</p>
             </div>
-
-            <!-- Tarjetas de Servicios -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Residuos Orgánicos (FO) -->
-                <div class="bg-white rounded-2xl shadow-xl p-8 card-hover scroll-reveal border-t-4 border-emerald-600">
-                    <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 icon-pulse">
-                        <i class="fas fa-apple-alt text-white text-3xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Residuos Orgánicos</h3>
-                    <div class="bg-emerald-100 text-emerald-700 text-sm font-bold px-3 py-1 rounded-full inline-block mb-4">FO</div>
-                    <p class="text-gray-600 leading-relaxed mb-4">
-                        Restos de comida, cáscaras, residuos de jardín y todo material biodegradable que puede convertirse en compost.
-                    </p>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-emerald-600"></i>
-                            <span>Compostaje ecológico</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-emerald-600"></i>
-                            <span>Recolección semanal</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-emerald-600"></i>
-                            <span>+50 puntos por kg</span>
-                        </li>
-                    </ul>
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                    </svg>
                 </div>
-
-                <!-- Frutas y Verduras (FV) -->
-                <div class="bg-white rounded-2xl shadow-xl p-8 card-hover scroll-reveal delay-100 border-t-4 border-green-600">
-                    <div class="bg-gradient-to-br from-green-500 to-green-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 icon-pulse">
-                        <i class="fas fa-carrot text-white text-3xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Frutas y Verduras</h3>
-                    <div class="bg-green-100 text-green-700 text-sm font-bold px-3 py-1 rounded-full inline-block mb-4">FV</div>
-                    <p class="text-gray-600 leading-relaxed mb-4">
-                        Restos de frutas y verduras especialmente seleccionados para procesamiento especializado y creación de abonos orgánicos.
-                    </p>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-600"></i>
-                            <span>Abono orgánico premium</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-600"></i>
-                            <span>Recolección bisemanal</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-600"></i>
-                            <span>+75 puntos por kg</span>
-                        </li>
-                    </ul>
+                <h3>Gestión Empresarial</h3>
+                <p>Planes corporativos con contenedores industriales y gestión de residuos especiales para empresas.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="7.5 4.21 12 6.81 16.5 4.21"/>
+                        <polyline points="7.5 19.79 7.5 14.6 3 12"/>
+                        <polyline points="21 12 16.5 14.6 16.5 19.79"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
                 </div>
-
-                <!-- Residuos Inorgánicos -->
-                <div class="bg-white rounded-2xl shadow-xl p-8 card-hover scroll-reveal delay-200 border-t-4 border-blue-600">
-                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 icon-pulse">
-                        <i class="fas fa-recycle text-white text-3xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Residuos Inorgánicos</h3>
-                    <div class="bg-blue-100 text-blue-700 text-sm font-bold px-3 py-1 rounded-full inline-block mb-4">INORG</div>
-                    <p class="text-gray-600 leading-relaxed mb-4">
-                        Plásticos, vidrios, metales, papel y cartón. Todo material reciclable que puede tener una segunda vida útil.
-                    </p>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-blue-600"></i>
-                            <span>Clasificación automática</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-blue-600"></i>
-                            <span>Recolección semanal</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-blue-600"></i>
-                            <span>+40 puntos por kg</span>
-                        </li>
-                    </ul>
+                <h3>Reciclaje Especializado</h3>
+                <p>Procesamiento de materiales especiales: electrónicos, orgánicos, plásticos y materiales peligrosos.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20v-6M6 20V10M18 20V4"/>
+                    </svg>
                 </div>
+                <h3>Monitoreo en Tiempo Real</h3>
+                <p>Plataforma digital para seguimiento de recolecciones, reportes y optimización de rutas.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                </div>
+                <h3>Recolección Programada</h3>
+                <p>Sistema de agendamiento flexible con notificaciones automáticas y recordatorios.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                </div>
+                <h3>Consultoría Ambiental</h3>
+                <p>Asesoría especializada en gestión de residuos, certificaciones y cumplimiento normativo.</p>
+            </div>
+        </div>
+    </section>
 
-                <!-- Residuos Peligrosos -->
-                <div class="bg-white rounded-2xl shadow-xl p-8 card-hover scroll-reveal delay-300 border-t-4 border-red-600">
-                    <div class="bg-gradient-to-br from-red-500 to-red-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 icon-pulse">
-                        <i class="fas fa-exclamation-triangle text-white text-3xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Residuos Peligrosos</h3>
-                    <div class="bg-red-100 text-red-700 text-sm font-bold px-3 py-1 rounded-full inline-block mb-4">PELIGROSO</div>
-                    <p class="text-gray-600 leading-relaxed mb-4">
-                        Baterías, electrónicos, químicos y otros materiales que requieren manejo especializado y certificado.
-                    </p>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-red-600"></i>
-                            <span>Disposición certificada</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-red-600"></i>
-                            <span>Recolección mensual</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-red-600"></i>
-                            <span>+100 puntos por kg</span>
-                        </li>
-                    </ul>
+    <!-- Process Section -->
+    <section class="section" style="background: var(--bg-light);">
+        <div class="section-header">
+            <h2>¿Cómo Funciona?</h2>
+            <p>Un proceso simple y eficiente en solo 4 pasos</p>
+        </div>
+        <div class="process-steps">
+            <div class="process-step">
+                <div class="step-number">1</div>
+                <h3>Registro</h3>
+                <p>Crea tu cuenta y elige el plan que mejor se adapte a tus necesidades</p>
+            </div>
+            <div class="process-step">
+                <div class="step-number">2</div>
+                <h3>Programa</h3>
+                <p>Agenda tu recolección según tu disponibilidad y frecuencia preferida</p>
+            </div>
+            <div class="process-step">
+                <div class="step-number">3</div>
+                <h3>Recolección</h3>
+                <p>Nuestro equipo recoge tus residuos de forma puntual y profesional</p>
+            </div>
+            <div class="process-step">
+                <div class="step-number">4</div>
+                <h3>Reciclaje</h3>
+                <p>Procesamos y reciclamos tus residuos de manera responsable y sostenible</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Beneficios de EcoResiduos</h2>
+            <p>Más que un servicio de recolección, una solución integral para el medio ambiente</p>
+        </div>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <div class="benefit-content">
+                    <h3>100% Confiable</h3>
+                    <p>Servicio garantizado con cobertura completa y atención al cliente 24/7</p>
+                </div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                        <line x1="7" y1="7" x2="7.01" y2="7"/>
+                    </svg>
+                </div>
+                <div class="benefit-content">
+                    <h3>Precios Competitivos</h3>
+                    <p>Tarifas justas y transparentes sin costos ocultos ni sorpresas</p>
+                </div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                        <line x1="9" y1="9" x2="9.01" y2="9"/>
+                        <line x1="15" y1="9" x2="15.01" y2="9"/>
+                    </svg>
+                </div>
+                <div class="benefit-content">
+                    <h3>Fácil de Usar</h3>
+                    <p>Plataforma intuitiva para gestionar todos tus servicios desde cualquier dispositivo</p>
+                </div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div class="benefit-content">
+                    <h3>Impacto Positivo</h3>
+                    <p>Contribuye activamente a la reducción de huella de carbono y protección ambiental</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Sección ¿Cómo Funciona? -->
-    <section id="como-funciona" class="py-20 lg:py-32 bg-white relative overflow-hidden">
-        <!-- Elementos decorativos -->
-        <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-100 rounded-full blur-3xl opacity-30"></div>
-        <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-30"></div>
-
-        <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
-            <!-- Header -->
-            <div class="text-center mb-16 scroll-reveal">
-                <div class="inline-flex items-center space-x-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full mb-4">
-                    <i class="fas fa-lightbulb"></i>
-                    <span class="text-sm font-semibold">Proceso Simple</span>
-                </div>
-                <h2 class="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6">
-                    ¿Cómo Funciona?
-                </h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Cuatro simples pasos para comenzar a ganar puntos y ayudar al medio ambiente
-                </p>
-            </div>
-
-            <!-- Pasos -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Paso 1 -->
-                <div class="relative scroll-reveal">
-                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-8 text-center card-hover">
-                        <div class="relative inline-block mb-6">
-                            <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 w-20 h-20 rounded-2xl flex items-center justify-center shadow-xl">
-                                <i class="fas fa-user-plus text-white text-3xl"></i>
-                            </div>
-                            <div class="absolute -top-2 -right-2 bg-white text-emerald-600 font-bold text-lg w-10 h-10 rounded-full flex items-center justify-center shadow-lg">
-                                1
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Regístrate</h3>
-                        <p class="text-gray-600 leading-relaxed">
-                            Crea tu cuenta en minutos. Es gratis y sin compromisos. Solo necesitas tu email y listo.
-                        </p>
-                    </div>
-                    <!-- Flecha conectora (desktop) -->
-                    <div class="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                        <i class="fas fa-arrow-right text-4xl text-emerald-300"></i>
-                    </div>
-                </div>
-
-                <!-- Paso 2 -->
-                <div class="relative scroll-reveal delay-100">
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 text-center card-hover">
-                        <div class="relative inline-block mb-6">
-                            <div class="bg-gradient-to-br from-blue-500 to-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center shadow-xl">
-                                <i class="fas fa-calendar-alt text-white text-3xl"></i>
-                            </div>
-                            <div class="absolute -top-2 -right-2 bg-white text-blue-600 font-bold text-lg w-10 h-10 rounded-full flex items-center justify-center shadow-lg">
-                                2
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Programa</h3>
-                        <p class="text-gray-600 leading-relaxed">
-                            Selecciona día y hora para tu recolección. Flexible y adaptado a tu horario.
-                        </p>
-                    </div>
-                    <div class="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                        <i class="fas fa-arrow-right text-4xl text-blue-300"></i>
-                    </div>
-                </div>
-
-                <!-- Paso 3 -->
-                <div class="relative scroll-reveal delay-200">
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 text-center card-hover">
-                        <div class="relative inline-block mb-6">
-                            <div class="bg-gradient-to-br from-purple-500 to-purple-600 w-20 h-20 rounded-2xl flex items-center justify-center shadow-xl">
-                                <i class="fas fa-star text-white text-3xl"></i>
-                            </div>
-                            <div class="absolute -top-2 -right-2 bg-white text-purple-600 font-bold text-lg w-10 h-10 rounded-full flex items-center justify-center shadow-lg">
-                                3
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Acumula Puntos</h3>
-                        <p class="text-gray-600 leading-relaxed">
-                            Gana puntos por cada kilogramo de residuos reciclados. Mientras más reciclas, más ganas.
-                        </p>
-                    </div>
-                    <div class="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                        <i class="fas fa-arrow-right text-4xl text-purple-300"></i>
-                    </div>
-                </div>
-
-                <!-- Paso 4 -->
-                <div class="scroll-reveal delay-300">
-                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-8 text-center card-hover">
-                        <div class="relative inline-block mb-6">
-                            <div class="bg-gradient-to-br from-orange-500 to-orange-600 w-20 h-20 rounded-2xl flex items-center justify-center shadow-xl">
-                                <i class="fas fa-gift text-white text-3xl"></i>
-                            </div>
-                            <div class="absolute -top-2 -right-2 bg-white text-orange-600 font-bold text-lg w-10 h-10 rounded-full flex items-center justify-center shadow-lg">
-                                4
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Canjea Beneficios</h3>
-                        <p class="text-gray-600 leading-relaxed">
-                            Usa tus puntos para obtener descuentos, productos y experiencias exclusivas.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CTA -->
-            <div class="text-center mt-16 scroll-reveal">
-                <a href="{{ route('register') }}" class="inline-flex items-center space-x-3 px-10 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 transition-all shadow-2xl hover:shadow-3xl transform hover:scale-105 btn-primary">
-                    <span>Comenzar Ahora</span>
-                    <i class="fas fa-rocket"></i>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Sección Beneficios -->
-    <section id="beneficios" class="py-20 lg:py-32 bg-gradient-to-br from-gray-50 to-emerald-50">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <!-- Header -->
-            <div class="text-center mb-16 scroll-reveal">
-                <div class="inline-flex items-center space-x-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full mb-4">
-                    <i class="fas fa-trophy"></i>
-                    <span class="text-sm font-semibold">Recompensas</span>
-                </div>
-                <h2 class="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6">
-                    Beneficios Increíbles
-                </h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Cada acción cuenta. Disfruta de recompensas mientras cuidas el planeta
-                </p>
-            </div>
-
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <!-- Columna izquierda - Beneficios -->
-                <div class="space-y-6 scroll-reveal">
-                    <!-- Beneficio 1 -->
-                    <div class="bg-white rounded-2xl p-6 shadow-xl card-hover flex items-start space-x-4">
-                        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-coins text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Sistema de Puntos</h3>
-                            <p class="text-gray-600">
-                                Gana hasta 100 puntos por kg según el tipo de residuo. Los puntos nunca expiran.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Beneficio 2 -->
-                    <div class="bg-white rounded-2xl p-6 shadow-xl card-hover flex items-start space-x-4">
-                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-leaf text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Impacto Ambiental</h3>
-                            <p class="text-gray-600">
-                                Mira en tiempo real cuánto CO₂ has ayudado a reducir y árboles que has salvado.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Beneficio 3 -->
-                    <div class="bg-white rounded-2xl p-6 shadow-xl card-hover flex items-start space-x-4">
-                        <div class="bg-gradient-to-br from-purple-500 to-purple-600 w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-percentage text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Descuentos Exclusivos</h3>
-                            <p class="text-gray-600">
-                                Canjea puntos por descuentos en comercios aliados, productos ecológicos y más.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Beneficio 4 -->
-                    <div class="bg-white rounded-2xl p-6 shadow-xl card-hover flex items-start space-x-4">
-                        <div class="bg-gradient-to-br from-orange-500 to-orange-600 w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-users text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Comunidad Activa</h3>
-                            <p class="text-gray-600">
-                                Únete a una comunidad comprometida con el medio ambiente y participa en eventos.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Columna derecha - Estadísticas e Imagen -->
-                <div class="scroll-reveal delay-200">
-                    <!-- Tarjeta de estadísticas -->
-                    <div class="bg-white rounded-3xl p-8 shadow-2xl">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-6">Nuestro Impacto</h3>
-                        
-                        <div class="space-y-6">
-                            <!-- Estadística 1 -->
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="bg-emerald-100 p-3 rounded-lg">
-                                        <i class="fas fa-recycle text-emerald-600 text-xl"></i>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm text-gray-600">Toneladas Recicladas</div>
-                                        <div class="text-3xl font-bold stat-number">50+</div>
-                                    </div>
-                                </div>
-                                <div class="text-emerald-600 font-semibold">↑ 23%</div>
-                            </div>
-
-                            <!-- Estadística 2 -->
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="bg-blue-100 p-3 rounded-lg">
-                                        <i class="fas fa-tree text-blue-600 text-xl"></i>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm text-gray-600">Árboles Salvados</div>
-                                        <div class="text-3xl font-bold stat-number">1,200+</div>
-                                    </div>
-                                </div>
-                                <div class="text-emerald-600 font-semibold">↑ 45%</div>
-                            </div>
-
-                            <!-- Estadística 3 -->
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="bg-purple-100 p-3 rounded-lg">
-                                        <i class="fas fa-smog text-purple-600 text-xl"></i>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm text-gray-600">CO₂ Reducido (kg)</div>
-                                        <div class="text-3xl font-bold stat-number">85K+</div>
-                                    </div>
-                                </div>
-                                <div class="text-emerald-600 font-semibold">↑ 67%</div>
-                            </div>
-                        </div>
-
-                        <!-- Imagen decorativa -->
-                        <div class="mt-8 relative">
-                            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2940&auto=format&fit=crop" 
-                                 alt="Impacto ambiental" 
-                                 class="rounded-2xl w-full h-64 object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/50 to-transparent rounded-2xl"></div>
-                            <div class="absolute bottom-4 left-4 right-4 text-white">
-                                <div class="text-sm font-semibold mb-1">Juntos hacemos la diferencia</div>
-                                <div class="text-2xl font-bold">+5,000 familias activas</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Sección CTA Final -->
-    <section class="py-20 lg:py-32 bg-gradient-to-r from-emerald-600 to-emerald-700 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-            <div class="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        </div>
-        
-        <div class="relative max-w-7xl mx-auto px-6 lg:px-8 text-center">
-            <div class="scroll-reveal">
-                <h2 class="text-4xl lg:text-5xl font-extrabold text-white mb-6">
-                    ¿Listo para Hacer la Diferencia?
-                </h2>
-                <p class="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-                    Únete a miles de personas que ya están contribuyendo a un planeta más limpio y ganando recompensas
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center space-x-3 px-10 py-4 rounded-xl font-bold text-emerald-700 bg-white hover:bg-gray-50 transition-all shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                        <span>Registrarse Gratis</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                    <a href="#servicios" class="inline-flex items-center justify-center space-x-3 px-10 py-4 rounded-xl font-bold text-white border-2 border-white/50 hover:bg-white/10 backdrop-blur-sm transition-all">
-                        <span>Ver Más Información</span>
-                        <i class="fas fa-info-circle"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
+    <!-- CTA Section -->
+    <section class="cta" id="contacto">
+        <h2>¿Listo para Comenzar?</h2>
+        <p>Únete a miles de clientes que ya confían en EcoResiduos para un futuro más sostenible</p>
+        <a href="{{ Route::has('register') ? route('register') : '#' }}" class="btn-primary">Solicitar Servicio Ahora</a>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
-            <div class="grid md:grid-cols-4 gap-8">
-                <!-- Logo y descripción -->
-                <div class="md:col-span-2">
-                    <div class="flex items-center space-x-3 mb-4">
-                        <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 p-2 rounded-xl">
-                            <i class="fas fa-leaf text-white text-2xl"></i>
-                        </div>
-                        <span class="font-bold text-2xl text-white">EcoResiduos</span>
-                    </div>
-                    <p class="text-gray-400 mb-6 max-w-md">
-                        Transformamos la manera en que gestionas tus residuos. Juntos construimos un futuro más sostenible.
-                    </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="bg-gray-800 hover:bg-emerald-600 w-10 h-10 rounded-lg flex items-center justify-center transition-colors">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="bg-gray-800 hover:bg-emerald-600 w-10 h-10 rounded-lg flex items-center justify-center transition-colors">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="bg-gray-800 hover:bg-emerald-600 w-10 h-10 rounded-lg flex items-center justify-center transition-colors">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="bg-gray-800 hover:bg-emerald-600 w-10 h-10 rounded-lg flex items-center justify-center transition-colors">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Enlaces rápidos -->
-                <div>
-                    <h4 class="text-white font-bold mb-4">Enlaces Rápidos</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#servicios" class="hover:text-emerald-500 transition-colors">Servicios</a></li>
-                        <li><a href="#como-funciona" class="hover:text-emerald-500 transition-colors">¿Cómo Funciona?</a></li>
-                        <li><a href="#beneficios" class="hover:text-emerald-500 transition-colors">Beneficios</a></li>
-                        <li><a href="{{ route('register') }}" class="hover:text-emerald-500 transition-colors">Registrarse</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contacto -->
-                <div>
-                    <h4 class="text-white font-bold mb-4">Contacto</h4>
-                    <ul class="space-y-3">
-                        <li class="flex items-center space-x-3">
-                            <i class="fas fa-phone text-emerald-500"></i>
-                            <span>+1 (555) 123-4567</span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <i class="fas fa-envelope text-emerald-500"></i>
-                            <span>info@ecoresiduos.com</span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <i class="fas fa-map-marker-alt text-emerald-500"></i>
-                            <span>Calle Principal #123</span>
-                        </li>
-                    </ul>
-                </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>EcoResiduos</h3>
+                <p style="color: rgba(255, 255, 255, 0.7); line-height: 1.8;">Liderando la transformación hacia una gestión sostenible de residuos con tecnología e innovación.</p>
             </div>
-
-            <!-- Copyright -->
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500">
-                <p>&copy; {{ date('Y') }} EcoResiduos. Todos los derechos reservados. Hecho con <i class="fas fa-heart text-emerald-500"></i> para el planeta.</p>
+            <div class="footer-section">
+                <h3>Servicios</h3>
+                <ul>
+                    <li><a href="#servicios">Recolección Residencial</a></li>
+                    <li><a href="#servicios">Gestión Empresarial</a></li>
+                    <li><a href="#servicios">Reciclaje Especializado</a></li>
+                    <li><a href="#servicios">Consultoría</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Empresa</h3>
+                <ul>
+                    <li><a href="#nosotros">Sobre Nosotros</a></li>
+                    <li><a href="#equipo">Nuestro Equipo</a></li>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#privacidad">Política de Privacidad</a></li>
+                    <li><a href="#terminos">Términos y Condiciones</a></li>
+                    <li><a href="#cookies">Cookies</a></li>
+                </ul>
             </div>
         </div>
+        <div class="footer-bottom">
+            <p>&copy; {{ date('Y') }} EcoResiduos. Todos los derechos reservados.</p>
+        </div>
     </footer>
-
-    <!-- Botón Scroll to Top -->
-    <button id="scrollTopBtn" class="fixed bottom-8 right-8 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white w-12 h-12 rounded-full shadow-2xl hover:shadow-3xl transition-all opacity-0 pointer-events-none flex items-center justify-center z-40">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-
-    <!-- Scripts -->
-    <script>
-        // Mobile Menu Toggle
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
-
-        // Scroll Reveal Animation
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('revealed');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.scroll-reveal').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Scroll to Top Button
-        const scrollTopBtn = document.getElementById('scrollTopBtn');
-        
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                scrollTopBtn.classList.remove('opacity-0', 'pointer-events-none');
-                scrollTopBtn.classList.add('opacity-100');
-            } else {
-                scrollTopBtn.classList.add('opacity-0', 'pointer-events-none');
-                scrollTopBtn.classList.remove('opacity-100');
-            }
-        });
-
-        scrollTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // Smooth Scroll for Anchor Links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (href !== '#' && href !== '') {
-                    e.preventDefault();
-                    const target = document.querySelector(href);
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                        // Cerrar menú móvil si está abierto
-                        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                            mobileMenu.classList.add('hidden');
-                        }
-                    }
-                }
-            });
-        });
-
-        // Navbar background on scroll
-        const navbar = document.querySelector('nav');
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 50) {
-                navbar.classList.add('shadow-lg');
-            } else {
-                navbar.classList.remove('shadow-lg');
-            }
-        });
-    </script>
 </body>
 </html>

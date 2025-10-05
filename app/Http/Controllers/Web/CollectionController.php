@@ -1,3 +1,4 @@
+
 <?php
 namespace App\Http\Controllers\Web;
 
@@ -25,7 +26,7 @@ class CollectionController extends Controller
 
     public function index()
     {
-        $collections = Collection::with(['user', 'company'])
+        $collections = Collection::with(['user', 'company', 'localidad', 'ruta'])
             ->latest()
             ->get();
         return view('collections.index', compact('collections'));
@@ -48,9 +49,16 @@ class CollectionController extends Controller
             'localidad_id' => 'nullable|exists:localidads,id',
             'ruta_id' => 'nullable|exists:rutas,id',
             'tipo_residuo' => 'required|string',
+            'programada' => 'nullable|boolean',
             'fecha_programada' => 'required|date',
+            'turno_num' => 'nullable|integer',
             'peso_kg' => 'nullable|numeric|min:0',
             'estado' => 'required|string',
+            'estado_solicitud' => 'nullable|string',
+            'fecha_solicitud' => 'nullable|date',
+            'fecha_aprobacion' => 'nullable|date',
+            'aprobado_por' => 'nullable|exists:users,id',
+            'motivo_rechazo' => 'nullable|string',
             'notas' => 'nullable|string',
         ]);
 
@@ -62,6 +70,12 @@ class CollectionController extends Controller
         // Marcar como programada si tiene fecha
         if (isset($validated['fecha_programada'])) {
             $validated['programada'] = true;
+        }
+
+        // Si es residuo peligroso y no tiene estado_solicitud, establecer como solicitado
+        if ($validated['tipo_residuo'] === Collection::TIPO_PELIGROSO && !isset($validated['estado_solicitud'])) {
+            $validated['estado_solicitud'] = Collection::ESTADO_SOLICITADO;
+            $validated['fecha_solicitud'] = now();
         }
 
         $collection = Collection::create($validated);
@@ -76,6 +90,7 @@ class CollectionController extends Controller
 
     public function show(Collection $collection)
     {
+        $collection->load(['user', 'company', 'localidad', 'ruta', 'aprobador']);
         return view('collections.show', compact('collection'));
     }
 
@@ -83,7 +98,9 @@ class CollectionController extends Controller
     {
         $users = User::all();
         $companies = Company::all();
-        return view('collections.edit', compact('collection', 'users', 'companies'));
+        $localidades = Localidad::where('activo', true)->orderBy('nombre')->get();
+        $rutas = Ruta::where('activo', true)->with(['localidad', 'company'])->get();
+        return view('collections.edit', compact('collection', 'users', 'companies', 'localidades', 'rutas'));
     }
 
     public function update(Request $request, Collection $collection)
@@ -91,10 +108,19 @@ class CollectionController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'company_id' => 'required|exists:companies,id',
+            'localidad_id' => 'nullable|exists:localidads,id',
+            'ruta_id' => 'nullable|exists:rutas,id',
             'tipo_residuo' => 'required|string',
+            'programada' => 'nullable|boolean',
             'fecha_programada' => 'required|date',
-            'peso_kg' => 'required|numeric|min:0',
+            'turno_num' => 'nullable|integer',
+            'peso_kg' => 'nullable|numeric|min:0',
             'estado' => 'required|string',
+            'estado_solicitud' => 'nullable|string',
+            'fecha_solicitud' => 'nullable|date',
+            'fecha_aprobacion' => 'nullable|date',
+            'aprobado_por' => 'nullable|exists:users,id',
+            'motivo_rechazo' => 'nullable|string',
             'notas' => 'nullable|string',
         ]);
 
@@ -132,17 +158,12 @@ class CollectionController extends Controller
             return redirect()->route('collections.index')->with('error', 'Solo se pueden registrar residuos en recolecciones pendientes.');
         }
 
-        //return view('collections.register-waste', compact('collection'));
-
         return view('collections.register-waste', compact('collection', 'tiposResiduos', 'details'));
-
-        // echo "Funcionalidad en desarrollo";
     }
 
     public function updateWaste(Request $request, $id)
     {
         $collection = Collection::findOrFail($id);
-        //$puntosPorKg = Point::findOrFail($id); // Asumiendo que hay un registro con ID 1
 
         $setting = Setting::first();
 
@@ -192,13 +213,6 @@ class CollectionController extends Controller
             // Concatenar todos los tipos de residuos
             $collection->tipo_residuo = implode(', ', array_unique($request->tipos));
 
-            /* $puntos = $setting->value * $pesoTotal; // Asumiendo que 'value' es el campo que contiene los puntos por kg
-              // Asignar puntos al usuario
-            $puntosPorKg = new Point();
-            $puntosPorKg->usuario_id = $collection->user_id;
-            $puntosPorKg->puntos = $puntos;
-            $puntosPorKg->save(); */
-
             // Asegúrate antes de esto de tener $pesoTotal y $pointsPerKg (valor numérico)
             $pointsPerKg = Setting::First()->value;
             $puntos = $pointsPerKg * $pesoTotal;
@@ -217,8 +231,6 @@ class CollectionController extends Controller
                     'puntos' => $puntos,
                 ]);
             }
-
-            
 
             if (!$collection->save()) {
                 throw new \Exception('Error al actualizar la colección principal');

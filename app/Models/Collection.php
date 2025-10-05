@@ -1,7 +1,6 @@
-
 <?php
 
-namespace App\Models;
+namespace App\Models;   
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -49,6 +48,46 @@ class Collection extends Model
     const ESTADO_RECHAZADO = 'rechazado';
     const ESTADO_PROGRAMADO = 'programado';
     const ESTADO_COMPLETADO = 'completado';
+
+    /**
+     * Obtener array de tipos de residuos para formularios
+     */
+    public static function getTiposResiduos()
+    {
+        return [
+            self::TIPO_ORGANICO => 'Orgánicos (FO)',
+            self::TIPO_INORGANICO => 'Inorgánicos',
+            self::TIPO_PELIGROSO => 'Peligrosos',
+        ];
+    }
+
+    /**
+     * Obtener array de estados para formularios
+     */
+    public static function getEstados()
+    {
+        return [
+            'pendiente' => 'Pendiente',
+            'programada' => 'Programada',
+            'en_proceso' => 'En Proceso',
+            'completado' => 'Completado',
+            'cancelada' => 'Cancelada',
+        ];
+    }
+
+    /**
+     * Obtener array de estados de solicitud para formularios
+     */
+    public static function getEstadosSolicitud()
+    {
+        return [
+            self::ESTADO_SOLICITADO => 'Solicitado',
+            self::ESTADO_APROBADO => 'Aprobado',
+            self::ESTADO_RECHAZADO => 'Rechazado',
+            self::ESTADO_PROGRAMADO => 'Programado',
+            self::ESTADO_COMPLETADO => 'Completado',
+        ];
+    }
 
     /**
      * Relación: Una recolección pertenece a un usuario

@@ -1,8 +1,6 @@
-
 <?php
 
 namespace App\Mail;
-
 use App\Models\Canje;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;

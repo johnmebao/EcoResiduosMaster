@@ -13,8 +13,10 @@ class Point extends Model
 
 
     protected $fillable = [
-        'usuario_id', 
-        'puntos'
+        'user_id',
+        'collection_id',
+        'points',
+        'description'
     ];
 
     // Relación con el usuario

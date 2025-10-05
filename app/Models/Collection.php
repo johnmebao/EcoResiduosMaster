@@ -1,8 +1,6 @@
-
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
@@ -49,6 +47,30 @@ class Collection extends Model
     const ESTADO_RECHAZADO = 'rechazado';
     const ESTADO_PROGRAMADO = 'programado';
     const ESTADO_COMPLETADO = 'completado';
+
+    // Método para obtener tipos de residuos disponibles
+    public static function getTiposResiduos()
+    {
+        return [
+            'Orgánico' => 'Orgánico',
+            'Plástico' => 'Plástico',
+            'Papel' => 'Papel',
+            'Vidrio' => 'Vidrio',
+            'Metal' => 'Metal',
+            'Otros' => 'Otros'
+        ];
+    }
+
+    // Método para obtener estados disponibles
+    public static function getEstados()
+    {
+        return [
+            'pendiente' => 'Pendiente',
+            'en_proceso' => 'En Proceso',
+            'completado' => 'Completado',
+            'cancelado' => 'Cancelado'
+        ];
+    }
 
     /**
      * Relación: Una recolección pertenece a un usuario

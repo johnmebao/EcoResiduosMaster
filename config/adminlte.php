@@ -308,11 +308,13 @@ return [
             'text' => 'Empresas',
             'url' => '/companies',
             'icon' => 'fas fa-industry',
+            'can' => 'companies.index',
         ],
         [
             'text' => 'Usuarios',
             'url' => '/personas',
             'icon' => 'fas fa-user',
+            'can' => 'personas.index',
         ],
         [
             'text'=> 'Roles',
@@ -324,26 +326,31 @@ return [
             'text' => 'Recolecciones',
             'url' => '/collections',
             'icon' => 'fas fa-recycle',
+            'can' => 'collections.index',
         ],
         [
             'text' => 'Puntos de Reciclaje',
             'url' => '/recycling-points',
             'icon' => 'fas fa-trash',
+            'can' => 'recycling-points.index',
         ],
         [
             'text' => 'Reportes',
             'url' => '/reports',
             'icon' => 'fas fa-file-alt',
+            'can' => 'reports.index',
         ],
         [
             'text' => 'Canjes',
             'url' => '/canjes',
             'icon' => 'fas fa-exchange-alt',
+            'can' => 'canjes.index',
         ],
         [
             'text' => 'Configuraciones',
             'url' => '/settings',
             'icon' => 'fas fa-cogs',
+            'can' => 'settings.index',
         ],
    
     ],

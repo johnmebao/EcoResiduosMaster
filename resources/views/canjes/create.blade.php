@@ -9,165 +9,155 @@
 @section('content')
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1><i class="fas fa-store"></i> Tienda de Canjes</h1>
+            <h1>Canjear Puntos</h1>
             <a href="{{ route('canjes.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Volver a Mis Canjes
+                <i class="fas fa-arrow-left"></i> Volver al historial
             </a>
         </div>
 
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
         <!-- Tarjeta de puntos disponibles -->
-        <div class="row mb-3">
+        <div class="row mb-4">
             <div class="col-md-12">
-                <div class="alert alert-info">
-                    <h4><i class="fas fa-coins"></i> Puntos Disponibles: <strong>{{ $puntosDisponibles }}</strong></h4>
-                    <p class="mb-0">Selecciona un producto de la tienda para canjear tus puntos por descuentos exclusivos.</p>
+                <div class="card bg-gradient-success">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h3 class="text-white mb-0">
+                                    <i class="fas fa-coins"></i> Tus Puntos Disponibles
+                                </h3>
+                                <p class="text-white-50 mb-0">Puntos acumulados listos para canjear</p>
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <h1 class="text-white mb-0 display-3">
+                                    {{ number_format($puntosDisponibles) }}
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        @if($tiendas->isEmpty())
-            <div class="alert alert-warning text-center">
-                <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
-                <p class="mb-0">No hay productos disponibles en la tienda en este momento. Por favor, vuelve más tarde.</p>
+        <!-- Tiendas disponibles -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-store"></i> Tiendas Disponibles para Canjear
+                </h3>
             </div>
-        @else
-            <div class="row">
-                @foreach($tiendas as $tienda)
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 {{ $tienda->puntos_requeridos > $puntosDisponibles ? 'border-secondary' : 'border-success' }}">
-                            <div class="card-header {{ $tienda->puntos_requeridos > $puntosDisponibles ? 'bg-secondary' : 'bg-success' }} text-white">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-tag"></i> {{ $tienda->nombre }}
-                                </h5>
-                            </div>
-                            <div class="card-body d-flex flex-column">
-                                <p class="card-text flex-grow-1">{{ $tienda->descripcion }}</p>
-                                
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="badge badge-warning badge-lg">
-                                            <i class="fas fa-coins"></i> {{ $tienda->puntos_requeridos }} puntos
-                                        </span>
-                                        <span class="badge badge-success badge-lg">
-                                            <i class="fas fa-percentage"></i> {{ $tienda->descuento_porcentaje }}% OFF
-                                        </span>
-                                    </div>
-                                    
-                                    @if($tienda->puntos_requeridos > $puntosDisponibles)
-                                        <div class="alert alert-warning mb-0 py-2">
-                                            <small>
-                                                <i class="fas fa-info-circle"></i> 
-                                                Te faltan {{ $tienda->puntos_requeridos - $puntosDisponibles }} puntos
-                                            </small>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <form action="{{ route('canjes.store') }}" method="POST" class="canje-form">
-                                    @csrf
-                                    <input type="hidden" name="tienda_id" value="{{ $tienda->id }}">
-                                    <button 
-                                        type="submit" 
-                                        class="btn btn-block {{ $tienda->puntos_requeridos > $puntosDisponibles ? 'btn-secondary' : 'btn-success' }}"
-                                        {{ $tienda->puntos_requeridos > $puntosDisponibles ? 'disabled' : '' }}
-                                    >
-                                        <i class="fas fa-shopping-cart"></i> 
-                                        {{ $tienda->puntos_requeridos > $puntosDisponibles ? 'Puntos Insuficientes' : 'Canjear Ahora' }}
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+            <div class="card-body">
+                @if($tiendas->isEmpty())
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No hay tiendas disponibles en este momento.
                     </div>
-                @endforeach
+                @else
+                    <div class="row">
+                        @foreach($tiendas as $tienda)
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card h-100 {{ $puntosDisponibles >= $tienda->puntos_requeridos ? 'border-success' : 'border-secondary' }}">
+                                    <div class="card-header {{ $puntosDisponibles >= $tienda->puntos_requeridos ? 'bg-success' : 'bg-secondary' }} text-white">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-store"></i> {{ $tienda->nombre }}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">{{ $tienda->descripcion }}</p>
+                                        
+                                        @if($tienda->direccion)
+                                            <p class="mb-2">
+                                                <i class="fas fa-map-marker-alt text-danger"></i>
+                                                <small>{{ $tienda->direccion }}</small>
+                                            </p>
+                                        @endif
+                                        
+                                        @if($tienda->telefono)
+                                            <p class="mb-2">
+                                                <i class="fas fa-phone text-primary"></i>
+                                                <small>{{ $tienda->telefono }}</small>
+                                            </p>
+                                        @endif
+
+                                        <hr>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div>
+                                                <small class="text-muted">Puntos requeridos:</small>
+                                                <h4 class="mb-0">
+                                                    <span class="badge badge-primary">
+                                                        <i class="fas fa-coins"></i> {{ number_format($tienda->puntos_requeridos) }}
+                                                    </span>
+                                                </h4>
+                                            </div>
+                                            <div>
+                                                <small class="text-muted">Descuento:</small>
+                                                <h4 class="mb-0">
+                                                    <span class="badge badge-success">
+                                                        {{ number_format($tienda->descuento_porcentaje, 0) }}% OFF
+                                                    </span>
+                                                </h4>
+                                            </div>
+                                        </div>
+
+                                        @if($puntosDisponibles >= $tienda->puntos_requeridos)
+                                            <form action="{{ route('canjes.store') }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas canjear {{ number_format($tienda->puntos_requeridos) }} puntos por un descuento del {{ number_format($tienda->descuento_porcentaje, 0) }}% en {{ $tienda->nombre }}?');">
+                                                @csrf
+                                                <input type="hidden" name="tienda_id" value="{{ $tienda->id }}">
+                                                <button type="submit" class="btn btn-success btn-block">
+                                                    <i class="fas fa-gift"></i> Canjear Ahora
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button class="btn btn-secondary btn-block" disabled>
+                                                <i class="fas fa-lock"></i> Puntos Insuficientes
+                                            </button>
+                                            <small class="text-danger">
+                                                Te faltan {{ number_format($tienda->puntos_requeridos - $puntosDisponibles) }} puntos
+                                            </small>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
-        @endif
+        </div>
 
         <!-- Información adicional -->
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0"><i class="fas fa-info-circle"></i> ¿Cómo funciona?</h5>
-                    </div>
-                    <div class="card-body">
-                        <ol>
-                            <li><strong>Acumula puntos:</strong> Realiza recolecciones de residuos para ganar puntos.</li>
-                            <li><strong>Elige tu producto:</strong> Selecciona el producto que deseas canjear de nuestra tienda.</li>
-                            <li><strong>Obtén tu código:</strong> Recibirás un código único para usar tu descuento.</li>
-                            <li><strong>Disfruta tu beneficio:</strong> Usa el código en la tienda asociada para obtener tu descuento.</li>
-                        </ol>
-                        <p class="mb-0 text-muted">
-                            <i class="fas fa-lightbulb"></i> 
-                            <strong>Tip:</strong> Los códigos de canje tienen validez limitada. Úsalos pronto para aprovechar tus descuentos.
-                        </p>
-                    </div>
-                </div>
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5><i class="fas fa-info-circle text-info"></i> ¿Cómo funciona?</h5>
+                <ol class="mb-0">
+                    <li>Selecciona la tienda donde deseas obtener un descuento</li>
+                    <li>Asegúrate de tener suficientes puntos para el canje</li>
+                    <li>Confirma el canje y recibirás un código único</li>
+                    <li>Presenta el código en la tienda para obtener tu descuento</li>
+                </ol>
             </div>
         </div>
     </div>
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        .badge-lg {
-            font-size: 0.9rem;
-            padding: 0.4rem 0.6rem;
-        }
         .card {
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
         }
-        .card:hover:not(.border-secondary) {
+        .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .border-success {
-            border-width: 2px !important;
+        .bg-gradient-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         }
     </style>
-@stop
-
-@section('js')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        $(function() {
-            // Confirmar canje con SweetAlert2
-            $('.canje-form').on('submit', function(e) {
-                e.preventDefault();
-                const form = $(this);
-                const tiendaNombre = form.closest('.card').find('h5').text().trim();
-                const puntosRequeridos = form.find('input[name="tienda_id"]').closest('.card-body').find('.badge-warning').text().trim();
-
-                Swal.fire({
-                    title: '¿Confirmar Canje?',
-                    html: `
-                        <p>Estás a punto de canjear:</p>
-                        <p><strong>${tiendaNombre}</strong></p>
-                        <p>${puntosRequeridos}</p>
-                        <p class="text-muted">Esta acción no se puede deshacer.</p>
-                    `,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#28a745',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="fas fa-check"></i> Sí, Canjear',
-                    cancelButtonText: '<i class="fas fa-times"></i> Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.off('submit').submit();
-                    }
-                });
-            });
-
-            // Manejar alertas con SweetAlert2
-            @if (session('error'))
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: "{{ session('error') }}",
-                    confirmButtonColor: '#dc3545',
-                });
-            @endif
-        });
-    </script>
 @stop

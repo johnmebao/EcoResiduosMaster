@@ -15,8 +15,9 @@ class PersonaController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
         $personas = Persona::all();
-        return view('personas.index', compact('personas'));
+        return view('personas.index', compact('personas', 'user'));
     }
 
     /**
@@ -78,7 +79,7 @@ class PersonaController extends Controller
 
         $roles = Role::all();
         $personal = Persona::findOrFail($id);
-        return view('admin.personal.edit', compact('personal', 'roles'));
+        return view('personas.edit', compact('personal', 'roles'));
     }
 
     public function update(Request $request, $id)
@@ -99,7 +100,7 @@ class PersonaController extends Controller
 
         $personal->nombres = $request->nombres;
         $personal->documento = $request->documento;
-        $personal->correo = $request->email;
+        $personal->email = $request->email;
         $personal->save();
 
         // Actualizar usuario relacionado

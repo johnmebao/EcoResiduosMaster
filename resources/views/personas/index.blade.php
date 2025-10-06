@@ -32,12 +32,17 @@
                                     <td>{{ $persona->documento }}</td>
                                     <td>
                                         <!-- Aquí puedes poner botones de editar/eliminar -->
-                                        <a href="{{ url('/admin/personal/edit', $persona->id) }}" class="btn btn-sm btn-warning">Editar</a>
-                                        <form action="{{ url('/admin/personal/delete/' . $persona->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta persona?')">Eliminar</button>
-                                        </form>
+                                        
+                                        @if ($user->role !== 'Administrador')
+                                            <a href="{{ url('personas/edit', $persona->id) }}" class="btn btn-sm btn-warning">Editar</a>
+                                            <form action="{{ url('personas/delete/' . $persona->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta persona?')">Eliminar</button>
+                                            </form>
+                                        @else
+                                            <span class="text-muted">No autorizado</span>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

@@ -574,7 +574,7 @@
             <div class="nav-links">
                 @if (Route::has('login'))
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="btn-primary">Dashboard</a>
+                        <a href="{{ url('/home') }}" class="btn-primary">Dashboard</a>
                     @else
                         <a href="{{ route('login') }}">Iniciar Sesión</a>
                         @if (Route::has('register'))

@@ -9,204 +9,212 @@
 @section('content')
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1><i class="fas fa-ticket-alt"></i> Detalle del Canje</h1>
+            <h1>Detalle del Canje</h1>
             <a href="{{ route('canjes.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Volver a Mis Canjes
+                <i class="fas fa-arrow-left"></i> Volver al historial
             </a>
         </div>
 
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
         <div class="row">
-            <!-- Tarjeta principal del canje -->
+            <!-- Información del canje -->
             <div class="col-md-8">
-                <div class="card card-success card-outline">
-                    <div class="card-header">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
                         <h3 class="card-title">
-                            <i class="fas fa-info-circle"></i> Información del Canje
+                            <i class="fas fa-gift"></i> Información del Canje
                         </h3>
                     </div>
                     <div class="card-body">
-                        <div class="row">
+                        <div class="row mb-3">
                             <div class="col-md-6">
-                                <dl class="row">
-                                    <dt class="col-sm-5">ID Canje:</dt>
-                                    <dd class="col-sm-7"><span class="badge badge-primary">#{{ $canje->id }}</span></dd>
-
-                                    <dt class="col-sm-5">Tienda:</dt>
-                                    <dd class="col-sm-7"><strong>{{ $canje->tienda->nombre }}</strong></dd>
-
-                                    <dt class="col-sm-5">Descripción:</dt>
-                                    <dd class="col-sm-7">{{ $canje->tienda->descripcion }}</dd>
-
-                                    <dt class="col-sm-5">Descuento:</dt>
-                                    <dd class="col-sm-7">
-                                        <span class="badge badge-success badge-lg">
-                                            <i class="fas fa-percentage"></i> {{ $canje->descuento_obtenido }}% OFF
-                                        </span>
-                                    </dd>
-                                </dl>
+                                <strong><i class="fas fa-store text-primary"></i> Tienda:</strong>
+                                <p class="mb-0">{{ $canje->tienda->nombre }}</p>
                             </div>
                             <div class="col-md-6">
-                                <dl class="row">
-                                    <dt class="col-sm-5">Puntos Canjeados:</dt>
-                                    <dd class="col-sm-7">
-                                        <span class="badge badge-warning badge-lg">
-                                            <i class="fas fa-coins"></i> {{ $canje->puntos_canjeados }} puntos
-                                        </span>
-                                    </dd>
-
-                                    <dt class="col-sm-5">Fecha de Canje:</dt>
-                                    <dd class="col-sm-7">{{ $canje->fecha_canje->format('d/m/Y H:i') }}</dd>
-
-                                    <dt class="col-sm-5">Estado:</dt>
-                                    <dd class="col-sm-7">
-                                        @if($canje->estado === 'pendiente')
-                                            <span class="badge badge-warning badge-lg">
-                                                <i class="fas fa-clock"></i> Pendiente de Uso
-                                            </span>
-                                        @elseif($canje->estado === 'usado')
-                                            <span class="badge badge-success badge-lg">
-                                                <i class="fas fa-check-circle"></i> Utilizado
-                                            </span>
-                                        @else
-                                            <span class="badge badge-secondary badge-lg">
-                                                <i class="fas fa-times-circle"></i> {{ ucfirst($canje->estado) }}
-                                            </span>
-                                        @endif
-                                    </dd>
-                                </dl>
+                                <strong><i class="fas fa-calendar text-info"></i> Fecha de Canje:</strong>
+                                <p class="mb-0">{{ $canje->fecha_canje->format('d/m/Y H:i') }}</p>
                             </div>
                         </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong><i class="fas fa-coins text-warning"></i> Puntos Canjeados:</strong>
+                                <p class="mb-0">
+                                    <span class="badge badge-primary badge-lg">
+                                        {{ number_format($canje->puntos_canjeados) }} puntos
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong><i class="fas fa-percentage text-success"></i> Descuento Obtenido:</strong>
+                                <p class="mb-0">
+                                    <span class="badge badge-success badge-lg">
+                                        {{ number_format($canje->descuento_obtenido, 0) }}% OFF
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <strong><i class="fas fa-info-circle text-info"></i> Estado:</strong>
+                                <p class="mb-0">
+                                    @if($canje->estado === 'pendiente')
+                                        <span class="badge badge-warning badge-lg">
+                                            <i class="fas fa-clock"></i> Pendiente de Uso
+                                        </span>
+                                    @elseif($canje->estado === 'usado')
+                                        <span class="badge badge-success badge-lg">
+                                            <i class="fas fa-check"></i> Usado
+                                        </span>
+                                    @else
+                                        <span class="badge badge-secondary badge-lg">
+                                            <i class="fas fa-times"></i> Expirado
+                                        </span>
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+
+                        @if($canje->tienda->descripcion)
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <strong><i class="fas fa-align-left text-secondary"></i> Descripción de la Tienda:</strong>
+                                    <p class="mb-0">{{ $canje->tienda->descripcion }}</p>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($canje->tienda->direccion || $canje->tienda->telefono)
+                            <hr>
+                            <div class="row">
+                                @if($canje->tienda->direccion)
+                                    <div class="col-md-6">
+                                        <strong><i class="fas fa-map-marker-alt text-danger"></i> Dirección:</strong>
+                                        <p class="mb-0">{{ $canje->tienda->direccion }}</p>
+                                    </div>
+                                @endif
+                                @if($canje->tienda->telefono)
+                                    <div class="col-md-6">
+                                        <strong><i class="fas fa-phone text-primary"></i> Teléfono:</strong>
+                                        <p class="mb-0">{{ $canje->tienda->telefono }}</p>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
 
-            <!-- Tarjeta del código de canje -->
+            <!-- Código de canje -->
             <div class="col-md-4">
-                <div class="card card-warning card-outline">
-                    <div class="card-header">
+                <div class="card {{ $canje->estado === 'pendiente' ? 'border-success' : 'border-secondary' }}">
+                    <div class="card-header {{ $canje->estado === 'pendiente' ? 'bg-success' : 'bg-secondary' }} text-white">
                         <h3 class="card-title">
                             <i class="fas fa-qrcode"></i> Código de Canje
                         </h3>
                     </div>
                     <div class="card-body text-center">
-                        <div class="mb-3">
-                            <i class="fas fa-ticket-alt fa-3x text-warning"></i>
-                        </div>
-                        <h3 class="text-primary mb-3">
-                            <code id="codigoCanje" style="font-size: 1.5rem; letter-spacing: 2px;">
-                                {{ $canje->codigo_canje }}
-                            </code>
-                        </h3>
-                        <button class="btn btn-info btn-block" onclick="copiarCodigo()">
-                            <i class="fas fa-copy"></i> Copiar Código
-                        </button>
-                        
                         @if($canje->estado === 'pendiente')
-                            <div class="alert alert-info mt-3 mb-0">
-                                <small>
-                                    <i class="fas fa-info-circle"></i> 
-                                    Presenta este código en la tienda para obtener tu descuento.
-                                </small>
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i> Código Activo
                             </div>
-                        @elseif($canje->estado === 'usado')
-                            <div class="alert alert-success mt-3 mb-0">
+                        @else
+                            <div class="alert alert-secondary">
+                                <i class="fas fa-info-circle"></i> Código {{ ucfirst($canje->estado) }}
+                            </div>
+                        @endif
+
+                        <div class="mb-3">
+                            <h2 class="display-4 font-weight-bold text-primary" style="font-family: monospace;">
+                                {{ $canje->codigo_canje }}
+                            </h2>
+                        </div>
+
+                        @if($canje->estado === 'pendiente')
+                            <button class="btn btn-primary btn-block" onclick="copiarCodigo()">
+                                <i class="fas fa-copy"></i> Copiar Código
+                            </button>
+                            
+                            <hr>
+                            
+                            <div class="alert alert-info mb-0">
                                 <small>
-                                    <i class="fas fa-check-circle"></i> 
-                                    Este código ya fue utilizado.
+                                    <i class="fas fa-info-circle"></i>
+                                    Presenta este código en la tienda para obtener tu descuento del 
+                                    <strong>{{ number_format($canje->descuento_obtenido, 0) }}%</strong>
                                 </small>
                             </div>
                         @endif
                     </div>
                 </div>
 
-                <!-- Información adicional -->
-                <div class="card card-info card-outline">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-lightbulb"></i> Instrucciones
-                        </h3>
+                @if($canje->estado === 'pendiente')
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5><i class="fas fa-lightbulb text-warning"></i> Instrucciones</h5>
+                            <ol class="mb-0 pl-3">
+                                <li>Visita la tienda {{ $canje->tienda->nombre }}</li>
+                                <li>Muestra este código al personal</li>
+                                <li>Obtén tu descuento del {{ number_format($canje->descuento_obtenido, 0) }}%</li>
+                            </ol>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <ol class="pl-3 mb-0">
-                            <li>Copia el código de canje</li>
-                            <li>Visita la tienda: <strong>{{ $canje->tienda->nombre }}</strong></li>
-                            <li>Presenta el código al momento de pagar</li>
-                            <li>Disfruta tu descuento del <strong>{{ $canje->descuento_obtenido }}%</strong></li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tarjeta de acciones -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <a href="{{ route('canjes.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-list"></i> Ver Todos Mis Canjes
-                        </a>
-                        <a href="{{ route('canjes.create') }}" class="btn btn-success">
-                            <i class="fas fa-shopping-cart"></i> Realizar Otro Canje
-                        </a>
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
     </div>
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         .badge-lg {
-            font-size: 1rem;
-            padding: 0.5rem 0.75rem;
-        }
-        code {
-            background-color: #f8f9fa;
+            font-size: 1.1rem;
             padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            border: 2px dashed #007bff;
-        }
-        .card-outline {
-            border-top: 3px solid;
         }
     </style>
 @stop
 
 @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function copiarCodigo() {
-            const codigo = document.getElementById('codigoCanje').textContent.trim();
-            
-            // Crear elemento temporal para copiar
-            const tempInput = document.createElement('input');
-            tempInput.value = codigo;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-            
-            // Mostrar confirmación
-            Swal.fire({
-                icon: 'success',
-                title: '¡Código Copiado!',
-                text: 'El código ha sido copiado al portapapeles',
-                timer: 2000,
-                showConfirmButton: false
+            const codigo = "{{ $canje->codigo_canje }}";
+            navigator.clipboard.writeText(codigo).then(function() {
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Código copiado!',
+                    text: 'El código ha sido copiado al portapapeles',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }, function(err) {
+                // Fallback para navegadores antiguos
+                const textarea = document.createElement('textarea');
+                textarea.value = codigo;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Código copiado!',
+                    text: 'El código ha sido copiado al portapapeles',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             });
         }
-
-        // Manejar alertas con SweetAlert2
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: '¡Canje Exitoso!',
-                text: "{{ session('success') }}",
-                confirmButtonColor: '#28a745',
-            });
-        @endif
     </script>
 @stop

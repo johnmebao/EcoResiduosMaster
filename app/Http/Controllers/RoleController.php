@@ -112,11 +112,16 @@ class RoleController extends Controller
         // Find the role by ID
         $rol = Role::findOrFail($id);
         $permisos = Permission::all()->groupBy(function ($permiso) {
-            if(stripos($permiso->name, 'alerta') !== false) { return 'Configuración Alertas';}
-            if(stripos($permiso->name, 'configuracion') !== false) { return 'Configuración del Sistema';}   
-            if(stripos($permiso->name, 'sedes') !== false) { return 'Sedes';}
-            if(stripos($permiso->name, 'roles') !== false) { return 'Roles';}
-            if(stripos($permiso->name, 'personal') !== false) { return 'Personal';}
+            if(stripos($permiso->name, 'collections') !== false) { return 'Recolección de Residuos';}
+            if(stripos($permiso->name, 'solicitudes') !== false) { return 'Solicitudes';}   
+            if(stripos($permiso->name, 'recycling') !== false) { return 'Puntos de Reciclaje';}
+            if(stripos($permiso->name, 'users') !== false) { return 'Usuarios';}
+            if(stripos($permiso->name, 'personas') !== false) { return 'Personas';}
+            if(stripos($permiso->name, 'roles') !== false) { return 'Roles y Permisos';}
+            if(stripos($permiso->name, 'companies') !== false) { return 'Empresas';}
+            if(stripos($permiso->name, 'reports') !== false) { return 'Reportes';}
+            if(stripos($permiso->name, 'settings') !== false) { return 'Configuraciones';}
+            if(stripos($permiso->name, 'canjes') !== false) { return 'Canjes';}
             return 'Otros';
         });
 

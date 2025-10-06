@@ -32,14 +32,29 @@ class RolSeeder extends Seeder
         Company::create(['nombre' => 'Rio Aseo Total', 'tipo_residuos' => 'Plasticos', 'contacto' => '987654321']);
 
         // Assign permissions to roles
-        Permission::create(['name' => 'admin.configuracion.index'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.configuracion.store'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.sedes.index'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.sedes.create'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.sedes.store'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.sedes.edit'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.sedes.update'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.sedes.destroy'])->assignRole($administrador);
+        Permission::create(['name' => 'collections.index'])->assignRole($administrador);
+        Permission::create(['name' => 'collections.create'])->assignRole($administrador);
+        Permission::create(['name' => 'collections.store'])->assignRole($administrador);
+        Permission::create(['name' => 'collections.show'])->assignRole($administrador);
+        Permission::create(['name' => 'collections.edit'])->assignRole($administrador);
+        Permission::create(['name' => 'collections.markCompleted'])->assignRole($administrador);
+        Permission::create(['name' => 'collections.register-waste'])->assignRole($administrador);
+        Permission::create(['name' => 'collections.update-waste'])->assignRole($administrador);
+        Permission::create(['name' => 'collections.store-organicos'])->assignRole($administrador);
+        Permission::create(['name' => 'collections.store-inorganicos'])->assignRole($administrador);
+        Permission::create(['name' => 'admin.solicitudes-peligrosos.pendientes'])->assignRole($administrador);
+        Permission::create(['name' => 'admin.solicitudes-peligrosos.aprobar'])->assignRole($administrador);
+        Permission::create(['name' => 'admin.solicitudes-peligrosos.rechazar'])->assignRole($administrador);
+        Permission::create(['name' => 'admin.solicitudes-peligrosos.programar'])->assignRole($administrador);
+        Permission::create(['name' => 'recycling-points.index'])->assignRole($administrador);
+        Permission::create(['name' => 'users.index'])->assignRole($administrador);
+        Permission::create(['name' => 'users.show'])->assignRole($administrador);
+        Permission::create(['name' => 'personas.index'])->assignRole($administrador);
+        Permission::create(['name' => 'personas.create'])->assignRole($administrador);
+        Permission::create(['name' => 'personas.store'])->assignRole($administrador);
+        Permission::create(['name' => 'personas.edit'])->assignRole($administrador);
+        Permission::create(['name' => 'personas.update'])->assignRole($administrador);
+        Permission::create(['name' => 'personas.destroy'])->assignRole($administrador);
         Permission::create(['name' => 'admin.roles.index'])->assignRole($administrador);
         Permission::create(['name' => 'admin.roles.create'])->assignRole($administrador);
         Permission::create(['name' => 'admin.roles.store'])->assignRole($administrador);
@@ -48,16 +63,21 @@ class RolSeeder extends Seeder
         Permission::create(['name' => 'admin.roles.destroy'])->assignRole($administrador);
         Permission::create(['name' => 'admin.roles.permiso'])->assignRole($administrador);
         Permission::create(['name' => 'admin.roles.actualizar_permiso'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.personal.index'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.personal.create'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.personal.store'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.personal.edit'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.personal.update'])->assignRole($administrador);
-        Permission::create(['name' => 'admin.personal.destroy'])->assignRole($administrador);
-        Permission::create(['name' => 'alerta.configuracion'])->assignRole($administrador);
-        Permission::create(['name' => 'alerta.guardar_configuracion'])->assignRole($administrador);
-        Permission::create(['name' => 'alerta.boton.mostrar'])->assignRole($administrador);
-        Permission::create(['name' => 'alerta.boton.panico'])->assignRole($administrador);
-
+        Permission::create(['name' => 'companies.index'])->assignRole($administrador);
+        Permission::create(['name' => 'companies.create'])->assignRole($administrador);
+        Permission::create(['name' => 'companies.store'])->assignRole($administrador);
+        Permission::create(['name' => 'companies.edit'])->assignRole($administrador);
+        Permission::create(['name' => 'companies.update'])->assignRole($administrador);
+        Permission::create(['name' => 'companies.destroy'])->assignRole($administrador);
+        Permission::create(['name' => 'companies.show'])->assignRole($administrador);
+        Permission::create(['name' => 'reports.index'])->assignRole($administrador);
+        Permission::create(['name' => 'reports.create'])->assignRole($administrador);
+        Permission::create(['name' => 'reports.store'])->assignRole($administrador);
+        Permission::create(['name' => 'settings.index'])->assignRole($administrador);
+        Permission::create(['name' => 'settings.create'])->assignRole($administrador);
+        Permission::create(['name' => 'canjes.index'])->assignRole($administrador);
+        Permission::create(['name' => 'canjes.create'])->assignRole($administrador);
+        Permission::create(['name' => 'canjes.store'])->assignRole($administrador);
+        Permission::create(['name' => 'canjes.show'])->assignRole($administrador);
     }
 }

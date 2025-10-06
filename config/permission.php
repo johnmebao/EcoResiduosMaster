@@ -183,7 +183,8 @@ return [
          * When permissions or roles are updated the cache is flushed automatically.
          */
 
-        'expiration_time' => \DateInterval::createFromDateString('24 hours'),
+        //'expiration_time' => \DateInterval::createFromDateString('24 hours'),
+        'expiration_time' => 0, // Cambia esto a 0 para deshabilitar el caché
 
         /*
          * The cache key used to store all permissions.

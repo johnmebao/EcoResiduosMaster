@@ -23,13 +23,54 @@ class CollectionController extends Controller
         //$this->middleware('role:Recolector')->only(['registerWaste', 'updateWaste']);
     }
 
-    public function index()
+    /* public function index()
     {
         $collections = Collection::with(['user', 'company'])
             ->latest()
             ->get();
         return view('collections.index', compact('collections'));
+    } */
+
+        // En tu controlador, por ejemplo: app/Http/Controllers/CollectionController.php
+
+
+
+public function index()
+{
+    // 1. Obtenemos al usuario que ha iniciado sesión.
+    $user = Auth::user();
+
+    // 2. Iniciamos una consulta base con las relaciones que necesitas (user y company).
+    // Usar query() nos permite añadir condiciones de forma dinámica.
+    $query = Collection::with(['user', 'company']);
+
+    // 3. Aplicamos la lógica de filtrado según el rol del usuario.
+    // Esto asume que tienes un sistema de roles (ej. Spatie/laravel-permission).
+    if ($user->hasRole('Administrador')) {
+        // 👑 Rol Administrador: No se aplica ningún filtro. Ve todos los registros.
+    } 
+    elseif ($user->hasRole('Recolector')) {
+        // 👷 Rol Recolector: Filtra para ver solo las recolecciones con estado 'pendiente'.
+        // Asegúrate de que tu tabla 'collections' tenga una columna 'estado'.
+        $query->where('estado', 'pendiente');
+    } 
+    elseif ($user->hasRole('Usuario')) {
+        // 👤 Rol Usuario: Filtra para ver solo las recolecciones que él mismo creó.
+        // Asegúrate de que tu tabla 'collections' tenga la columna 'user_id'.
+        $query->where('user_id', $user->id);
+    } else {
+        // 🔒 Por seguridad, si el rol no coincide con ninguno, no se muestra nada.
+        // Forzamos la consulta a no devolver resultados.
+        $query->whereRaw('1 = 0');
     }
+
+    // 4. Ordenamos por el más reciente y paginamos los resultados.
+    // Paginar es mejor que usar get() para tablas que pueden crecer en tamaño.
+    $collections = $query->latest()->paginate(15);
+
+    // 5. Enviamos la colección ya filtrada y paginada a la vista.
+    return view('collections.index', compact('collections'));
+}
 
     public function create()
     {
@@ -42,6 +83,9 @@ class CollectionController extends Controller
 
     public function store(Request $request)
     {
+        /* $datos = $request->all();
+        return response()->json($datos); */
+
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'company_id' => 'required|exists:companies,id',
@@ -49,8 +93,6 @@ class CollectionController extends Controller
             'ruta_id' => 'nullable|exists:rutas,id',
             'tipo_residuo' => 'required|string',
             'fecha_programada' => 'required|date',
-            'peso_kg' => 'nullable|numeric|min:0',
-            'estado' => 'required|string',
             'notas' => 'nullable|string',
         ]);
 
@@ -205,9 +247,8 @@ class CollectionController extends Controller
             \Log::info("Calculando puntos desde el Setting: {$pointsPerKg} puntos/kg * {$pesoTotal} kg = {$puntos} puntos");
 
             // Buscar el registro Point del usuario; si no existe, lo crea y suma los puntos
-            $point = Point::firstOrNew(['usuario_id' => $collection->user_id]);
-            $point->puntos = ($point->puntos ?? 0) + $puntos;
-            $point->save();
+            // Usar el método addPoints del modelo Point
+            $point = Point::addPoints($collection->user_id, $puntos);
 
             \Log::info("Puntos actualizados para usuario {$collection->user_id}. Total: {$point->puntos}");
 

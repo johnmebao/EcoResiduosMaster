@@ -32,10 +32,23 @@ class CanjeController extends Controller
     public function create()
     {
         $tiendas = Tienda::activas()->orderBy('puntos_requeridos')->get();
+
         $puntosDisponibles = Auth::user()->point->available_points ?? 0;
         
         return view('canjes.create', compact('tiendas', 'puntosDisponibles'));
     }
+
+
+     /*  public function create()
+    {
+        $tiendas = Tienda::activas()->orderBy('puntos_requeridos')->get();
+        
+        // Obtener puntos disponibles del usuario autenticado
+        $user = Auth::user();
+        $puntosDisponibles = $user->puntos_disponibles;
+        
+        return view('canjes.create', compact('tiendas', 'puntosDisponibles'));
+    } */
 
     /**
      * Procesar canje

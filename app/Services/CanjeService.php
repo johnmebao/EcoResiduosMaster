@@ -23,7 +23,7 @@ class CanjeService
     /**
      * Validar si el usuario tiene puntos suficientes
      */
-    public function validarPuntosSuficientes(int $userId, int $puntosRequeridos): bool
+   /*  public function validarPuntosSuficientes(int $userId, int $puntosRequeridos): bool
     {
         $point = Point::where('user_id', $userId)->first();
         
@@ -32,12 +32,28 @@ class CanjeService
         }
 
         return $point->available_points >= $puntosRequeridos;
+    } */
+
+
+
+      /**
+     * Validar si el usuario tiene puntos suficientes
+     */
+    public function validarPuntosSuficientes(int $userId, int $puntosRequeridos): bool
+    {
+        $point = Point::where('usuario_id', $userId)->first();
+        
+        if (!$point) {
+            return false;
+        }
+
+        return $point->puntos >= $puntosRequeridos;
     }
 
     /**
      * Procesar un canje
      */
-    public function procesarCanje(int $userId, int $tiendaId): array
+   /*  public function procesarCanje(int $userId, int $tiendaId): array
     {
         try {
             DB::beginTransaction();
@@ -59,6 +75,66 @@ class CanjeService
 
             // Descontar puntos
             $point->available_points -= $tienda->puntos_requeridos;
+            $point->save();
+
+            // Generar código de canje
+            $codigoCanje = $this->generarCodigoCanje();
+
+            // Crear registro de canje
+            $canje = Canje::create([
+                'user_id' => $userId,
+                'tienda_id' => $tiendaId,
+                'puntos_canjeados' => $tienda->puntos_requeridos,
+                'descuento_obtenido' => $tienda->descuento_porcentaje,
+                'codigo_canje' => $codigoCanje,
+                'estado' => 'pendiente',
+                'fecha_canje' => now(),
+            ]);
+
+            DB::commit();
+
+            // Enviar notificación
+            $this->notificacionService->enviarNotificacionCanje($canje);
+
+            return [
+                'success' => true,
+                'canje' => $canje,
+                'message' => 'Canje realizado exitosamente',
+            ];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
+    } */
+
+
+    public function procesarCanje(int $userId, int $tiendaId): array
+    {
+        try {
+            DB::beginTransaction();
+
+            // Obtener tienda
+            $tienda = Tienda::findOrFail($tiendaId);
+
+            if (!$tienda->activo) {
+                throw new \Exception('La tienda no está activa');
+            }
+
+            // Validar puntos suficientes
+            if (!$this->validarPuntosSuficientes($userId, $tienda->puntos_requeridos)) {
+                throw new \Exception('No tienes puntos suficientes para este canje');
+            }
+
+            // Obtener puntos del usuario
+            $point = Point::where('usuario_id', $userId)->firstOrFail();
+
+            // Descontar puntos
+            $point->puntos -= $tienda->puntos_requeridos;
             $point->save();
 
             // Generar código de canje

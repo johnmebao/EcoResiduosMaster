@@ -30,8 +30,9 @@
                                 <td>{{ $point->user->name }}</td>
                                 <td>{{ $point->puntos }}</td>
                                 <td>
-                                    <a href="#" class="btn btn-info btn-sm">
+                                    <a href="{{ url('/canjes') }}" class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i>Cangear Puntos
+
                                     </a>
                                 </td>
                             </tr>

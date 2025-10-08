@@ -8,10 +8,13 @@
 
 @section('content')
     <div class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1>Usuario</h1>
-            <a href="{{ route('personas.create') }}" class="btn btn-primary">Nueva empresa</a>
+        <x-adminlte-card theme="lime" theme-mode="outline">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1>Usuario</h1>
+                <a href="{{ route('personas.create') }}" class="btn btn-primary">Nueva Usuario</a>
             </div>
+         </x-adminlte-card>
                 <div class="card-body">
                     <table id="sedes-table" class="table table-bordered table-striped">
                         <thead>

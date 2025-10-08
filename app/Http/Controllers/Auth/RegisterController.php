@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Persona;
+use App\Models\Point;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
@@ -52,6 +56,9 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'telefono' => ['required', 'string', 'max:100', 'unique:personals,telefono'],
+            'direccion' => ['required', 'string', 'max:100'],
+            'documento' => ['required', 'string', 'max:100', 'unique:personals,documento'],
         ]);
     }
 
@@ -63,10 +70,56 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        try {
+            DB::beginTransaction();
+            
+            // 1) crear usuario y guardarlo en $user
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
+
+            // 2) asignar rol (usando Spatie)
+            $user->assignRole('Usuario');
+
+            // 3) crear la persona en la tabla personals
+            try {
+                $persona = new Persona();
+                $persona->nombres = $data['name'];
+                $persona->email = $data['email'];
+                $persona->telefono = $data['telefono'];
+                $persona->direccion = $data['direccion'];
+                $persona->documento = $data['documento'];
+                $persona->usuario_id = $user->id;
+                
+                $persona->save();
+                Log::info('Persona creada con ID: ' . $persona->id);
+            } catch (\Exception $e) {
+                Log::error('Error al crear persona: ' . $e->getMessage());
+                throw $e;
+            }
+
+            // 4) Crear registro inicial de puntos
+            try {
+                Point::create([
+                    'usuario_id' => $user->id,
+                    'puntos' => 0,
+                    'puntos_canjeados' => 0
+                ]);
+                Log::info('Registro de puntos creado para usuario: ' . $user->id);
+            } catch (\Exception $e) {
+                Log::error('Error al crear puntos iniciales: ' . $e->getMessage());
+                throw $e;
+            }
+
+            DB::commit();
+            return $user;
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error en registro de usuario: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }

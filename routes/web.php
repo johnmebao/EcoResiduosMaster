@@ -118,6 +118,9 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index')->middleware('auth','can:settings.index');
     Route::get('/settings/create', [SettingController::class, 'create'])->name('settings.create')->middleware('auth','can:settings.create');
+    Route::post('/settings', [SettingController::class, 'store'])->name('settings.store')->middleware('auth','can:settings.store');
+    Route::get('/settings/edit/{id}', [SettingController::class, 'edit'])->name('settings.edit')->middleware('auth','can:settings.edit');
+    Route::put('/settings/{id}', [SettingController::class, 'update'])->name('settings.update')->middleware('auth','can:settings.update');
 });
 
 // FASE 3: MÓDULO DE CANJES - Protegidas con autenticación

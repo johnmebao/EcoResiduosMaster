@@ -3,18 +3,16 @@
 @section('title', 'Inicio')
 
 @section('content_header')
-
-<div class="align-items-right">
-<h1>Roles</h1>
-    <a href="{{ url('/admin/roles/create') }}" class="btn btn-success ms-auto align-items-right">
-                <i class="fas fa-plus me-2"></i> Nuevo Rol
-            </a>
-    <hr>
-</div>
     
 @stop
 
 @section('content')
+    <x-adminlte-card theme="lime" theme-mode="outline">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>Roles</h1>
+            <a href="{{ url('/admin/roles/create') }}" class="btn btn-primary">Nuevo Rol</a>
+        </div>
+    </x-adminlte-card>
     <x-adminlte-card theme="lime" theme-mode="outline">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Lista de Roles</h3>

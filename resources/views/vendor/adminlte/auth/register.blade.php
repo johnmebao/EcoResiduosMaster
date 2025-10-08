@@ -37,6 +37,60 @@
             @enderror
         </div>
 
+        {{-- Documento --}}
+        <div class="input-group mb-3">
+            <input type="number" name="documento" class="form-control @error('documento') is-invalid @enderror"
+                value="{{ old('documento') }}" placeholder="{{ __('Documento') }}" autofocus>
+
+            <div class="input-group-append">
+                <div class="input-group-text">
+                    <span class="fas fa-user {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                </div>
+            </div>
+
+            @error('name')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+
+        {{-- Teléfono --}}
+        <div class="input-group mb-3">
+            <input type="number" name="telefono" class="form-control @error('telefono') is-invalid @enderror"
+                value="{{ old('telefono') }}" placeholder="{{ __('Teléfono') }}" autofocus>
+
+            <div class="input-group-append">
+                <div class="input-group-text">
+                    <span class="fas fa-user {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                </div>
+            </div>
+
+            @error('name')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+
+        {{-- Dirección --}}
+        <div class="input-group mb-3">
+            <input type="text" name="direccion" class="form-control @error('direccion') is-invalid @enderror"
+                value="{{ old('direccion') }}" placeholder="{{ __('Dirección') }}" autofocus>
+
+            <div class="input-group-append">
+                <div class="input-group-text">
+                    <span class="fas fa-user {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                </div>
+            </div>
+
+            @error('name')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+
         {{-- Email field --}}
         <div class="input-group mb-3">
             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"

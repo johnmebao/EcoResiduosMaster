@@ -75,6 +75,9 @@ class RolSeeder extends Seeder
         Permission::create(['name' => 'reports.store'])->assignRole($administrador);
         Permission::create(['name' => 'settings.index'])->assignRole($administrador);
         Permission::create(['name' => 'settings.create'])->assignRole($administrador);
+        Permission::create(['name' => 'settings.store'])->assignRole($administrador);
+        Permission::create(['name' => 'settings.edit'])->assignRole($administrador);
+        Permission::create(['name' => 'settings.update'])->assignRole($administrador);
         Permission::create(['name' => 'canjes.index'])->assignRole($administrador);
         Permission::create(['name' => 'canjes.create'])->assignRole($administrador);
         Permission::create(['name' => 'canjes.store'])->assignRole($administrador);
